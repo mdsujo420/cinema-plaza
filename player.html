@@ -56,10 +56,8 @@
             }
         }
 
-        // ডিফল্ট প্রথম সার্ভার লোড করা
         iframe.src = `https://vidsrc.xyz/embed/${type}?tmdb=${id}`;
 
-        // মুভির বিস্তারিত তথ্য আনার জন্য API কল
         async function fetchDetails() {
             const TMDB_API_KEYS = [
                 '1a878c977c07619736ef416785671db8',
