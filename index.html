@@ -28,6 +28,8 @@
         .close-btn { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 30px; font-weight: bold; cursor: pointer; z-index: 1001; }
         .iframe-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
         .iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .server-switcher { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #0f172a; }
+        .server-switcher button { padding: 5px 12px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -50,6 +52,9 @@
     <div id="videoModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closePlayer()">&times;</span>
+            <div class="server-switcher" id="serverButtons">
+                <!-- Dynamic Server Buttons -->
+            </div>
             <div class="iframe-container">
                 <iframe id="videoPlayer" src="" allowfullscreen></iframe>
             </div>
@@ -59,6 +64,7 @@
     <script>
         const API_URL = 'https://cinema-plaza.onrender.com/api/content';
         let allData = [];
+        let currentItem = null;
 
         async function loadContent() {
             try {
@@ -106,16 +112,43 @@
         }
 
         function openPlayer(item) {
+            currentItem = item;
             const playerModal = document.getElementById('videoModal');
-            const iframe = document.getElementById('videoPlayer');
+            const serverButtons = document.getElementById('serverButtons');
             
             if(item.type === 'movie') {
-                iframe.src = `https://vidsrc.to/embed/movie/${item.id}`;
+                serverButtons.innerHTML = `
+                    <button onclick="changeServer('vidsrc_me')">Server 1 (VidSrc)</button>
+                    <button onclick="changeServer('embed_su')">Server 2 (2Embed)</button>
+                    <button onclick="changeServer('vidsrc_pro')">Server 3 (Pro)</button>
+                `;
+                changeServer('vidsrc_me');
             } else {
-                iframe.src = `https://vidsrc.to/embed/anime/${item.id}`;
+                serverButtons.innerHTML = `
+                    <button onclick="changeServer('vidsrc_anime')">Server 1</button>
+                    <button onclick="changeServer('2embed_anime')">Server 2</button>
+                `;
+                changeServer('vidsrc_anime');
             }
 
             playerModal.style.display = 'flex';
+        }
+
+        function changeServer(server) {
+            const iframe = document.getElementById('videoPlayer');
+            const id = currentItem.id;
+
+            if(server === 'vidsrc_me') {
+                iframe.src = `https://vidsrc.me/embed/movie?tmdb=${id}`;
+            } else if(server === 'embed_su') {
+                iframe.src = `https://2embed.org/embed/movie/${id}`;
+            } else if(server === 'vidsrc_pro') {
+                iframe.src = `https://vidsrc.pro/embed/movie/${id}`;
+            } else if(server === 'vidsrc_anime') {
+                iframe.src = `https://vidsrc.cc/v2/embed/anime/${id}`;
+            } else if(server === '2embed_anime') {
+                iframe.src = `https://2embed.org/embed/anime/${id}`;
+            }
         }
 
         function closePlayer() {
