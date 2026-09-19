@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinema Plaza - Premium Cinema & Anime</title>
+    <title>Cinema Plaza - Global Streaming Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -28,28 +28,24 @@
         
         .loader { text-align: center; font-size: 1.2rem; color: #38bdf8; margin-top: 80px; font-weight: 600; }
 
-        /* Premium Cinema Modal Player */
+        /* Premium Modal Player */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(12px); justify-content: center; align-items: flex-start; z-index: 9999; overflow-y: auto; padding: 30px 15px; }
         .modal-content { position: relative; width: 100%; max-width: 1050px; background: #0f172a; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9); margin: auto; }
         .close-btn { position: absolute; top: 16px; right: 20px; color: #94a3b8; font-size: 28px; font-weight: bold; cursor: pointer; z-index: 1010; width: 36px; height: 36px; background: rgba(15, 23, 42, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.1); transition: 0.2s; }
         .close-btn:hover { color: #fff; background: #f43f5e; border-color: #f43f5e; }
         
-        /* Modern Player Control Bar */
+        /* Control Bar */
         .controls-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; background: #1e293b; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .control-label { font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
         .controls-bar select { background: #0f172a; color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; outline: none; cursor: pointer; transition: 0.2s; }
-        .controls-bar select:hover { border-color: #38bdf8; background: #182238; }
+        
+        .lang-banner { background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; color: #cbd5e1; padding: 10px 16px; font-size: 0.82rem; }
 
-        /* Language Hint Banner */
-        .lang-banner { background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; color: #e2e8f0; padding: 10px 16px; font-size: 0.82rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .lang-banner span { display: flex; align-items: center; gap: 6px; }
-
-        /* Video Container */
         .iframe-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
         .iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
-        /* Media Info & Details Drawer */
+        /* Media Details Drawer */
         .media-details { padding: 24px; background: #0f172a; }
         .media-header { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
         .media-poster { width: 110px; height: 160px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
@@ -58,19 +54,17 @@
         .media-tags { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
         .tag { background: rgba(255,255,255,0.06); color: #cbd5e1; padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; }
         .rating-tag { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
-        .media-overview { font-size: 0.9rem; color: #94a3b8; line-height: 1.6; max-height: 90px; overflow-y: auto; padding-right: 5px; }
+        .media-overview { font-size: 0.9rem; color: #94a3b8; line-height: 1.6; max-height: 90px; overflow-y: auto; }
 
-        /* Seasons & Episodes Selector Box */
         .episodes-section { margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 20px; }
         .section-title { font-size: 1.1rem; font-weight: 700; color: #f8fafc; margin-bottom: 12px; }
         
-        .season-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: thin; }
-        .season-tab { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 8px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .season-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+        .season-tab { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 8px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .season-tab.active { background: #38bdf8; color: #070a12; border-color: #38bdf8; font-weight: 700; }
 
-        .episode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
-        .ep-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 10px 0; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .ep-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+        .episode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; max-height: 180px; overflow-y: auto; }
+        .ep-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 10px 0; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
         .ep-btn.active { background: #38bdf8; color: #070a12; border-color: #38bdf8; font-weight: 700; }
     </style>
 </head>
@@ -78,50 +72,40 @@
 
     <header>
         <h1>🎬 Cinema Plaza</h1>
-        <p>Stream Movies, Series & Anime with Multi-Audio & Subtitles</p>
+        <p>Explore & Stream Unlimited Movies, Series & Anime</p>
     </header>
 
     <div class="filters">
-        <button class="filter-btn active" onclick="filterContent('all', this)">All</button>
+        <button class="filter-btn active" onclick="filterContent('all', this)">All Content</button>
         <button class="filter-btn" onclick="filterContent('movie', this)">Movies</button>
-        <button class="filter-btn" onclick="filterContent('anime', this)">Anime</button>
+        <button class="filter-btn" onclick="filterContent('tv', this)">TV Series & Anime</button>
     </div>
 
-    <div id="loader" class="loader">Loading Plaza Library...</div>
+    <div id="loader" class="loader">Loading Library...</div>
     <div id="content-grid" class="grid"></div>
 
-    <!-- Enhanced Video Modal -->
+    <!-- Video Modal Player -->
     <div id="videoModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closePlayer()">&times;</span>
             
             <div class="controls-bar">
                 <div class="control-group">
-                    <span class="control-label">SERVER:</span>
+                    <span class="control-label">STREAM SERVER:</span>
                     <select id="serverSelect" onchange="updateStreamUrl()">
-                        <option value="vidlink">Server 1 (VidLink Pro - Auto Sub/Dub)</option>
-                        <option value="vidking">Server 2 (VidKing - Multi Audio)</option>
+                        <option value="vidsrc">Server 1 (VidSrc Pro - Multi Sub/Dub)</option>
+                        <option value="vidlink">Server 2 (VidLink - Fast Load)</option>
                         <option value="autoembed">Server 3 (AutoEmbed)</option>
-                    </select>
-                </div>
-
-                <div class="control-group">
-                    <span class="control-label">AUDIO / SUB:</span>
-                    <select id="audioGuideSelect" onchange="showAudioGuide()">
-                        <option value="auto">🌐 Multi-Audio Available (Change inside Player ⚙️)</option>
-                        <option value="hindi">🇮🇳 Hindi Dubbed Track</option>
-                        <option value="english">🇬🇧 English Audio / Subtitles</option>
-                        <option value="japanese">🇯🇵 Japanese Original (Subbed)</option>
                     </select>
                 </div>
             </div>
 
             <div class="lang-banner">
-                <span>🎧 <b>Audio/Language Instruction:</b> Click the Settings icon (⚙️) or Subtitle icon (CC) inside the video player controls to switch between available Audio Tracks & Subtitles.</span>
+                💡 <b>Audio & Subtitles Notice:</b> Audio and subtitles depend on stream availability. Use the player controls (⚙️ or CC) to select preferred subtitles if provided.
             </div>
 
             <div class="iframe-container">
-                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
             </div>
 
             <!-- Media Details Drawer -->
@@ -135,11 +119,11 @@
                             <span id="detailType" class="tag">TYPE</span>
                             <span id="detailYear" class="tag">YEAR</span>
                         </div>
-                        <p id="detailOverview" class="media-overview">Fetching description from TMDB...</p>
+                        <p id="detailOverview" class="media-overview">Loading description...</p>
                     </div>
                 </div>
 
-                <!-- Dynamic Season & Episode Drawer -->
+                <!-- Season & Episode Drawer -->
                 <div id="seriesControls" class="episodes-section" style="display: none;">
                     <div class="section-title">Seasons & Episodes</div>
                     <div id="seasonTabs" class="season-tabs"></div>
@@ -150,10 +134,10 @@
     </div>
 
     <script>
-        window.open = function() { return null; };
+        window.open = function() { return null; }; // Prevent Popup Redirects
 
-        const API_URL = 'https://cinema-plaza.onrender.com/api/content';
         const TMDB_API_KEY = '15d2ea64021d46a192f0b70ed4b2cd35';
+        const API_URL = 'https://cinema-plaza.onrender.com/api/content';
         
         let allData = [];
         let currentItem = null;
@@ -162,16 +146,43 @@
 
         async function loadContent() {
             try {
+                // Fetch from Backend API
                 const response = await fetch(API_URL);
                 const data = await response.json();
-                if(data.success) {
+                
+                if(data.success && data.data.length > 0) {
                     allData = data.data;
-                    document.getElementById('loader').style.display = 'none';
-                    renderCards(allData);
                 }
             } catch (error) {
-                document.getElementById('loader').innerText = 'Failed to load content. Please refresh.';
+                console.log("Backend offline, fetching direct TMDB trendings...");
             }
+
+            // Fallback: Fetch TMDB Trending Data to show lots of movies & series worldwide
+            if(allData.length < 10) {
+                await fetchTmdbTrending();
+            }
+
+            document.getElementById('loader').style.display = 'none';
+            renderCards(allData);
+        }
+
+        async function fetchTmdbTrending() {
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}`);
+                const data = await res.json();
+                
+                if(data.results) {
+                    const tmdbItems = data.results.map(item => ({
+                        id: item.id,
+                        title: item.title || item.name,
+                        type: item.media_type === 'movie' ? 'movie' : 'tv',
+                        poster: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '',
+                        rating: item.vote_average ? item.vote_average.toFixed(1) : '8.0',
+                        year: (item.release_date || item.first_air_date || '2024').substring(0, 4)
+                    }));
+                    allData = [...allData, ...tmdbItems];
+                }
+            } catch(e) {}
         }
 
         function renderCards(items) {
@@ -308,18 +319,14 @@
             const id = currentItem.id;
 
             if(currentItem.type === 'movie') {
-                if(server === 'vidlink') iframe.src = `https://vidlink.pro/movie/${id}?multi=true`;
-                else if(server === 'vidking') iframe.src = `https://vidking.net/embed/movie/${id}`;
+                if(server === 'vidsrc') iframe.src = `https://vidsrc.cc/v2/embed/movie/${id}`;
+                else if(server === 'vidlink') iframe.src = `https://vidlink.pro/movie/${id}`;
                 else iframe.src = `https://player.autoembed.cc/embed/movie/${id}`;
             } else {
-                if(server === 'vidlink') iframe.src = `https://vidlink.pro/tv/${id}/${currentSeason}/${currentEpisode}?multi=true`;
-                else if(server === 'vidking') iframe.src = `https://vidking.net/embed/tv/${id}/${currentSeason}/${currentEpisode}`;
+                if(server === 'vidsrc') iframe.src = `https://vidsrc.cc/v2/embed/tv/${id}/${currentSeason}/${currentEpisode}`;
+                else if(server === 'vidlink') iframe.src = `https://vidlink.pro/tv/${id}/${currentSeason}/${currentEpisode}`;
                 else iframe.src = `https://player.autoembed.cc/embed/tv/${id}/${currentSeason}/${currentEpisode}`;
             }
-        }
-
-        function showAudioGuide() {
-            alert("To change language or audio track, click the Settings (⚙️) or CC button inside the player control bar once the video starts playing.");
         }
 
         function closePlayer() {
