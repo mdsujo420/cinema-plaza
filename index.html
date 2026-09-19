@@ -1,73 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movebox Plaza - Unlimited Movies & Anime</title>
+    <title>Movie Plaza - Movies, Series & Anime</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">🍿 Movebox</a>
+        <a href="index.html" class="logo">🎬 Movie Plaza</a>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search Movies / TV Shows / Anime..." onkeyup="searchContent()">
+            <input type="text" id="searchInput" placeholder="Search Movies / Anime / TV Shows..." onkeyup="searchContent()">
         </div>
     </header>
 
     <div class="categories-bar">
-        <div class="cat-pill active" onclick="filterCat('all', this)">🏠 Home</div>
-        <div class="cat-pill" onclick="filterCat('tv', this)">📺 TV Shows</div>
-        <div class="cat-pill" onclick="filterCat('movie', this)">🎬 Movies</div>
-        <div class="cat-pill" onclick="filterCat('anime', this)">⚡ Anime</div>
-        <div class="cat-pill" onclick="filterCat('trending', this)">🔥 Trending</div>
+        <div class="cat-pill active" onclick="switchTab('all', this)">🏠 All Content</div>
+        <div class="cat-pill" onclick="switchTab('movie', this)">🎬 Movies</div>
+        <div class="cat-pill" onclick="switchTab('tv', this)">📺 TV Shows</div>
+        <div class="cat-pill" onclick="switchTab('anime', this)">⚡ Anime</div>
+        <div class="cat-pill" onclick="switchTab('trending', this)">🔥 Trending</div>
     </div>
 
     <div class="main-container">
-        <!-- Top Banner Ad (Header/Hero Below Slot) -->
+        <!-- Top Ad Space -->
         <div id="homeTopAd"></div>
 
-        <div class="section-title">🔥 Trending Now</div>
-        <div id="contentGrid" class="grid"></div>
+        <div class="section-title" id="gridTitle1">🔥 Trending & Popular Movies</div>
+        <div id="contentGrid" class="grid">Loading content...</div>
 
-        <!-- In-Between Grid Banner Ads (Movebox Native Style) -->
+        <!-- Middle Ad Space -->
         <div id="homeMiddleAd" class="ad-grid-row"></div>
 
-        <div class="section-title">📺 Popular Content</div>
-        <div id="contentGrid2" class="grid"></div>
+        <div class="section-title" id="gridTitle2">⚡ Popular Anime & Series</div>
+        <div id="contentGrid2" class="grid">Loading content...</div>
     </div>
 
     <script src="ads.js"></script>
     <script>
-        const TMDB_API_KEY = '15d2ea64021d46a192f0b70ed4b2cd35';
-        let allItems = [];
+        const API_KEY = '15d2ea64021d46a192f0b70ed4b2cd35';
+        
+        let allMovies = [];
+        let allTV = [];
+        let allAnime = [];
+        let combinedAll = [];
 
-        async function loadContent() {
+        // ১. সব ধরনের কন্টেন্ট একসাথে ফচ করার ফাংশন
+        async function fetchAllData() {
             try {
-                const res = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}`);
-                const data = await res.json();
-                if(data.results) {
-                    allItems = data.results.map(i => ({
-                        id: i.id,
-                        title: i.title || i.name,
-                        type: i.media_type === 'movie' ? 'movie' : 'tv',
-                        poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
-                        rating: i.vote_average ? i.vote_average.toFixed(1) : '8.0',
-                        year: (i.release_date || i.first_air_date || '2024').substring(0, 4),
-                        lang: i.original_language === 'ja' ? 'Sub/Dub' : 'Hindi/Eng'
-                    }));
+                // ১.১ ট্রেন্ডিং কন্টেন্ট
+                const trendRes = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEY}`);
+                const trendData = await trendRes.json();
 
-                    renderGrid(allItems.slice(0, 10), 'contentGrid');
-                    renderGrid(allItems.slice(10, 20), 'contentGrid2');
-                }
-            } catch(e) { console.error(e); }
+                // ১.২ পপুলার মুভি
+                const movieRes = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`);
+                const movieData = await movieRes.json();
+
+                // ১.৩ পপুলার অ্যানিমে (Genre ID 16 = Animation, Original Language = ja)
+                const animeRes = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=16&with_original_language=ja&sort_by=popularity.desc`);
+                const animeData = await animeRes.json();
+
+                // ডেটা ফরম্যাট করা
+                allMovies = formatItems(movieData.results || [], 'movie');
+                allAnime = formatItems(animeData.results || [], 'tv', true);
+                
+                const formattedTrending = formatItems(trendData.results || [], 'mixed');
+                
+                // সব কন্টেন্ট একসাথে মার্জ করা
+                combinedAll = [...formattedTrending, ...allMovies, ...allAnime];
+
+                // ফিল্টার আউট ইউনিক কন্টেন্ট
+                combinedAll = Array.from(new Map(combinedAll.map(item => [item.id, item])).values());
+
+                // হোমপেজে ডেটা রেন্ডার
+                renderGrid(allMovies.slice(0, 10), 'contentGrid');
+                renderGrid(allAnime.slice(0, 10), 'contentGrid2');
+
+            } catch (err) {
+                console.error("Error fetching data:", err);
+                document.getElementById('contentGrid').innerHTML = '<p style="color:#ef4444;">Failed to load content. Please check internet connection.</p>';
+            }
         }
 
+        // ডেটা ফরম্যাট করার সাহায্যকারী ফাংশন
+        function formatItems(items, defaultType, isAnime = false) {
+            return items.map(item => {
+                const type = item.media_type || defaultType;
+                return {
+                    id: item.id,
+                    title: item.title || item.name || 'Untitled',
+                    type: type === 'movie' ? 'movie' : 'tv',
+                    poster: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://placehold.co/500x750/1e293b/ffffff?text=No+Poster',
+                    rating: item.vote_average ? item.vote_average.toFixed(1) : '7.5',
+                    year: (item.release_date || item.first_air_date || '2024').substring(0, 4),
+                    lang: isAnime || item.original_language === 'ja' ? 'Sub/Dub' : 'Hindi/Eng',
+                    isAnime: isAnime || item.original_language === 'ja'
+                };
+            });
+        }
+
+        // গ্রিডে কার্ড বসানো
         function renderGrid(list, targetId) {
             const grid = document.getElementById(targetId);
-            if(!grid) return;
+            if (!grid) return;
             grid.innerHTML = '';
+
+            if (list.length === 0) {
+                grid.innerHTML = '<p style="color:#94a3b8; grid-column: 1/-1;">No content found.</p>';
+                return;
+            }
+            
             list.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -76,7 +120,7 @@
                 };
                 card.innerHTML = `
                     <span class="lang-badge">${item.lang}</span>
-                    <img src="${item.poster || 'https://via.placeholder.com/500x750'}" loading="lazy">
+                    <img src="${item.poster}" alt="${item.title}" loading="lazy">
                     <div class="card-content">
                         <div class="card-title">${item.title}</div>
                         <div class="card-info">
@@ -89,30 +133,78 @@
             });
         }
 
-        function filterCat(cat, btn) {
+        // ক্যাটাগরি ট্যাব সুইচ করার সিস্টেম
+        function switchTab(cat, btn) {
             document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            if(cat === 'all' || cat === 'trending') {
-                renderGrid(allItems.slice(0, 10), 'contentGrid');
-                renderGrid(allItems.slice(10, 20), 'contentGrid2');
-            } else {
-                const filtered = allItems.filter(i => cat === 'anime' ? (i.lang === 'Sub/Dub' || i.type === 'tv') : i.type === cat);
-                renderGrid(filtered, 'contentGrid');
-                document.getElementById('contentGrid2').innerHTML = '';
+
+            const grid1 = document.getElementById('contentGrid');
+            const grid2 = document.getElementById('contentGrid2');
+            const title1 = document.getElementById('gridTitle1');
+            const title2 = document.getElementById('gridTitle2');
+
+            if (cat === 'all') {
+                title1.innerText = '🔥 Trending & Popular Movies';
+                title2.innerText = '⚡ Popular Anime & Series';
+                grid2.style.display = 'grid';
+                title2.style.display = 'flex';
+                renderGrid(allMovies.slice(0, 10), 'contentGrid');
+                renderGrid(allAnime.slice(0, 10), 'contentGrid2');
+            } else if (cat === 'anime') {
+                title1.innerText = '⚡ Popular Anime Series & Movies';
+                title2.style.display = 'none';
+                grid2.style.display = 'none';
+                renderGrid(allAnime, 'contentGrid');
+            } else if (cat === 'movie') {
+                title1.innerText = '🎬 Top Movies';
+                title2.style.display = 'none';
+                grid2.style.display = 'none';
+                renderGrid(allMovies, 'contentGrid');
+            } else if (cat === 'tv') {
+                title1.innerText = '📺 TV Series';
+                title2.style.display = 'none';
+                grid2.style.display = 'none';
+                const tvList = combinedAll.filter(i => i.type === 'tv' && !i.isAnime);
+                renderGrid(tvList, 'contentGrid');
+            } else if (cat === 'trending') {
+                title1.innerText = '🔥 All Trending Content';
+                title2.style.display = 'none';
+                grid2.style.display = 'none';
+                renderGrid(combinedAll.slice(0, 20), 'contentGrid');
             }
         }
 
-        function searchContent() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allItems.filter(i => i.title.toLowerCase().includes(q));
-            renderGrid(filtered, 'contentGrid');
-            document.getElementById('contentGrid2').innerHTML = '';
+        // লাইভ সার্চ সিস্টেম
+        async function searchContent() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (query.length < 2) return;
+
+            const title1 = document.getElementById('gridTitle1');
+            const title2 = document.getElementById('gridTitle2');
+            const grid2 = document.getElementById('contentGrid2');
+
+            title1.innerText = `🔍 Search Results for: "${query}"`;
+            title2.style.display = 'none';
+            grid2.style.display = 'none';
+
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                const results = formatItems(data.results || [], 'movie');
+                renderGrid(results, 'contentGrid');
+            } catch (e) {
+                console.error(e);
+            }
         }
 
-        // Render Ads on Home
-        renderAdBanner('homeTopAd', 'leaderboard');
-        renderAdBanner('homeMiddleAd', 'banner');
-        loadContent();
+        // এড সিস্টেম কল
+        if (typeof renderAdBanner === 'function') {
+            renderAdBanner('homeTopAd', 'leaderboard');
+            renderAdBanner('homeMiddleAd', 'banner');
+        }
+
+        // ইনিশিয়ালাইজেশন
+        fetchAllData();
     </script>
 </body>
 </html>
