@@ -1,90 +1,75 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const schedule = require('node-schedule');
-require('dotenv').config();
-
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
-let contentData = [];
-let lastUpdated = null;
-
-async function fetchTMDBMovies() {
+// Content Fetching Route
+app.get('/api/content', async (req, res) => {
     try {
-        const response = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_API_KEY}`);
-        return response.data.results.map(movie => ({
-            id: movie.id,
-            title: movie.title,
-            type: 'movie',
-            rating: movie.vote_average,
-            description: movie.overview,
-            poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-            releaseDate: movie.release_date
+        const tmdbApiKey = process.env.TMDB_API_KEY || '826b580ea81021a504b92880d44cf7d9';
+        
+        // Fetch Movies from TMDB
+        const movieRes = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=${tmdbApiKey}`);
+        const movies = movieRes.data.results.slice(0, 10).map(m => ({
+            id: m.id,
+            title: m.title,
+            poster: `https://image.tmdb.org/t/p/w500${m.poster_path}`,
+            rating: m.vote_average.toFixed(1),
+            type: 'movie'
         }));
-    } catch (error) {
-        console.error('Error fetching TMDB:', error.message);
-        return [];
-    }
-}
 
-async function fetchJikanAnime() {
+        // Fetch Anime from Jikan
+        const animeRes = await axios.get('https://api.jikan.moe/v4/top/anime');
+        const anime = animeRes.data.data.slice(0, 10).map(a => ({
+            id: a.mal_id,
+            title: a.title,
+            poster: a.images.jpg.large_image_url,
+            rating: a.score || 'N/A',
+            type: 'anime'
+        }));
+
+        res.json({ success: true, data: [...movies, ...anime] });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Stream Link Resolver Route
+app.get('/api/stream', async (req, res) => {
+    const { type, id, title } = req.query;
     try {
-        const response = await axios.get('https://api.jikan.moe/v4/top/anime');
-        return response.data.data.slice(0, 20).map(anime => ({
-            id: anime.mal_id,
-            title: anime.title,
-            type: 'anime',
-            rating: anime.score || 0,
-            description: anime.synopsis,
-            poster: anime.images?.jpg?.image_url || null,
-            episodes: anime.episodes
-        }));
-    } catch (error) {
-        console.error('Error fetching Anime:', error.message);
-        return [];
+        if (type === 'anime') {
+            const searchRes = await axios.get(`https://api.consumet.org/anime/gogoanime/${encodeURIComponent(title)}`);
+            if (searchRes.data.results && searchRes.data.results.length > 0) {
+                const animeId = searchRes.data.results[0].id;
+                const infoRes = await axios.get(`https://api.consumet.org/anime/gogoanime/info/${animeId}`);
+                const episodeId = infoRes.data.episodes[0]?.id;
+                
+                if (episodeId) {
+                    const streamRes = await axios.get(`https://api.consumet.org/anime/gogoanime/watch/${episodeId}`);
+                    const defaultStream = streamRes.data.sources.find(s => s.quality === 'default') || streamRes.data.sources[0];
+                    return res.json({ success: true, streamUrl: defaultStream.url, isHls: true });
+                }
+            }
+        }
+        
+        const embedUrl = type === 'movie' 
+            ? `https://vidsrc.to/embed/movie/${id}`
+            : `https://autoembed.cc/embed/player.php?title=${encodeURIComponent(title)}`;
+
+        res.json({ success: true, streamUrl: embedUrl, isHls: false });
+    } catch (err) {
+        const fallbackUrl = type === 'movie'
+            ? `https://vidsrc.me/embed/movie?tmdb=${id}`
+            : `https://autoembed.cc/embed/player.php?title=${encodeURIComponent(title)}`;
+            
+        res.json({ success: true, streamUrl: fallbackUrl, isHls: false });
     }
-}
-
-async function updateAllContent() {
-    console.log('🔄 Fetching latest content...');
-    const movies = await fetchTMDBMovies();
-    const animes = await fetchJikanAnime();
-    contentData = [...movies, ...animes];
-    lastUpdated = new Date();
-    console.log(`✅ Update complete! Loaded ${contentData.length} items.`);
-}
-
-updateAllContent();
-schedule.scheduleJob('0 */6 * * *', updateAllContent);
-
-app.get('/api/content', (req, res) => {
-    const limit = parseInt(req.query.limit) || 50;
-    const type = req.query.type;
-    let result = contentData;
-    if (type) result = result.filter(item => item.type === type);
-    res.json({ success: true, count: result.length, data: result.slice(0, limit) });
 });
 
-app.post('/api/update', async (req, res) => {
-    await updateAllContent();
-    res.json({ success: true, message: 'Content updated successfully' });
-});
-
-app.get('/api/status', (req, res) => {
-    res.json({
-        status: 'Online',
-        totalContent: contentData.length,
-        movies: contentData.filter(c => c.type === 'movie').length,
-        animes: contentData.filter(c => c.type === 'anime').length,
-        lastUpdated: lastUpdated
-    });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
