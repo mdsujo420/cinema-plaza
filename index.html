@@ -54,8 +54,8 @@
             <span class="close-btn" onclick="closePlayer()">&times;</span>
             <div class="server-switcher" id="serverButtons"></div>
             <div class="iframe-container">
-                <!-- Sandbox stops redirecting popup ads -->
-                <iframe id="videoPlayer" src="" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+                <!-- Properly Configured Sandbox permissions to allow video while blocking popup tab redirects -->
+                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
             </div>
         </div>
     </div>
@@ -114,10 +114,10 @@
 
             if(item.type === 'movie') {
                 serverButtons.innerHTML = `
-                    <button onclick="changeServer('vidsrc_cc')">Server 1</button>
-                    <button onclick="changeServer('vidsrc_me')">Server 2</button>
+                    <button onclick="changeServer('movie_1')">Server 1 (VidSrc)</button>
+                    <button onclick="changeServer('movie_2')">Server 2 (VidSrc PRO)</button>
                 `;
-                changeServer('vidsrc_cc');
+                changeServer('movie_1');
             } else {
                 serverButtons.innerHTML = `
                     <button onclick="changeServer('anime_1')">Anime Server 1</button>
@@ -134,15 +134,15 @@
             const id = currentItem.id;
             const title = encodeURIComponent(currentItem.title);
 
-            if(server === 'vidsrc_cc') {
-                iframe.src = `https://vidsrc.cc/v2/embed/movie/${id}`;
-            } else if(server === 'vidsrc_me') {
-                iframe.src = `https://vidsrc.me/embed/movie?tmdb=${id}`;
+            if(server === 'movie_1') {
+                iframe.src = `https://vidsrc.xyz/embed/movie/${id}`;
+            } else if(server === 'movie_2') {
+                iframe.src = `https://vidsrc.pro/embed/movie/${id}`;
             } else if(server === 'anime_1') {
-                // Working Anime Embed Player Source
-                iframe.src = `https://vidsrc.sbs/embed/anime/${id}`;
+                // Working 2embed / 2ani player for Anime searching by title
+                iframe.src = `https://2embed.org/embed/anime/search?q=${title}`;
             } else if(server === 'anime_2') {
-                iframe.src = `https://2embed.org/embed/anime/${id}`;
+                iframe.src = `https://vidsrc.cc/v2/embed/anime/${id}`;
             }
         }
 
