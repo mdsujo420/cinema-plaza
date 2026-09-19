@@ -54,14 +54,14 @@
             <span class="close-btn" onclick="closePlayer()">&times;</span>
             <div class="server-switcher" id="serverButtons"></div>
             <div class="iframe-container">
-                <!-- Sandbox permissions added to allow streaming & fullscreen while strictly blocking popups and redirects -->
-                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
+                <!-- Clean Iframe with full screen and media permissions -->
+                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // JS Popup Blockers
+        // Global Popup Prevention
         window.open = function() { return null; };
 
         const API_URL = 'https://cinema-plaza.onrender.com/api/content';
@@ -117,14 +117,14 @@
 
             if(item.type === 'movie') {
                 serverButtons.innerHTML = `
-                    <button onclick="changeServer('m_1')">Server 1 (VidSrc)</button>
+                    <button onclick="changeServer('m_1')">Server 1 (VidLink Pro)</button>
                     <button onclick="changeServer('m_2')">Server 2 (AutoEmbed)</button>
                 `;
                 changeServer('m_1');
             } else {
                 serverButtons.innerHTML = `
-                    <button onclick="changeServer('a_1')">Anime Server 1</button>
-                    <button onclick="changeServer('a_2')">Anime Server 2</button>
+                    <button onclick="changeServer('a_1')">Anime Server 1 (VidLink)</button>
+                    <button onclick="changeServer('a_2')">Anime Server 2 (AutoEmbed)</button>
                 `;
                 changeServer('a_1');
             }
@@ -136,14 +136,15 @@
             const iframe = document.getElementById('videoPlayer');
             const id = currentItem.id;
 
+            // Clean, Stable API Sources without Sandboxing Blocks
             if(server === 'm_1') {
-                iframe.src = `https://vidsrc.me/embed/movie?tmdb=${id}`;
+                iframe.src = `https://vidlink.pro/movie/${id}`;
             } else if(server === 'm_2') {
-                iframe.src = `https://player.smashy.stream/movie/${id}`;
+                iframe.src = `https://player.autoembed.cc/embed/movie/${id}`;
             } else if(server === 'a_1') {
-                iframe.src = `https://vidsrc.me/embed/tv?tmdb=${id}`;
+                iframe.src = `https://vidlink.pro/tv/${id}/1/1`;
             } else if(server === 'a_2') {
-                iframe.src = `https://player.smashy.stream/tv/${id}`;
+                iframe.src = `https://player.autoembed.cc/embed/tv/${id}/1/1`;
             }
         }
 
