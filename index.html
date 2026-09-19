@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -31,102 +32,73 @@
 
         <div id="homeMiddleAd"></div>
 
-        <div class="section-title" id="gridTitle2">⚡ Popular Anime</div>
+        <div class="section-title" id="gridTitle2">⚡ Unlimited Anime Collection</div>
         <div id="contentGrid2" class="grid">Loading anime...</div>
     </div>
 
     <script src="ads.js"></script>
     <script>
-        const API_KEY = '15d2ea64021d46a192f0b70ed4b2cd35';
-
-        // কাজ করে এমন সরাসরি সিডিএন ইমেজের ব্যাকআপ লিস্ট
-        const backupMovies = [
-            { id: 550, title: "Fight Club", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BMmEzNTkxYjQtZTc0MC00YTVjLTg5ZTEtZWMwOWVlYzY0NWIwXkEyXkFqcGdeQXVyNzkwMjQ5MDM@._V1_FMjpg_UX1000_.jpg", rating: "8.4", year: "1999", lang: "Hindi/Eng" },
-            { id: 157336, title: "Interstellar", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg", rating: "8.6", year: "2014", lang: "Hindi/Eng" },
-            { id: 27205, title: "Inception", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg", rating: "8.4", year: "2010", lang: "Hindi/Eng" },
-            { id: 155, title: "The Dark Knight", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg", rating: "8.5", year: "2008", lang: "Hindi/Eng" },
-            { id: 299536, title: "Avengers: Infinity War", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg", rating: "8.3", year: "2018", lang: "Hindi/Eng" },
-            { id: 19995, title: "Avatar", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BZDA0OGM4NTItMDZkMC00M2VhLTg3N2EtOWFlODY3NDhhNzc3XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg", rating: "7.5", year: "2009", lang: "Hindi/Eng" },
-            { id: 24428, title: "The Avengers", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWEyMDAtNjk5ZTEyMDJmNDgxXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg", rating: "7.7", year: "2012", lang: "Hindi/Eng" },
-            { id: 603, title: "The Matrix", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg", rating: "8.2", year: "1999", lang: "Hindi/Eng" },
-            { id: 671, title: "Harry Potter", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BNmQ0ODBhMjUtNDRhOC00MGQzLTlhMTYtVTg4MDA4MDg1M2JiXkEyXkFqcGdeQXVyNDYyMDkxOTA@._V1_.jpg", rating: "7.6", year: "2001", lang: "Hindi/Eng" },
-            { id: 299534, title: "Avengers: Endgame", type: "movie", poster: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", rating: "8.4", year: "2019", lang: "Hindi/Eng" }
-        ];
-
-        const backupAnime = [
-            { id: 37854, title: "One Piece", type: "tv", poster: "https://m.media-amazon.com/images/M/MV5BODcwNWE3OTMtMDc3MS00NDFjLWE1OTAtNDU3NjgxZmJhRXzAXkEyXkFqcGdeQXVyNjg2NjQwMDQ@._V1_.jpg", rating: "8.9", year: "1999", lang: "Sub/Dub", isAnime: true },
-            { id: 1429, title: "Attack on Titan", type: "tv", poster: "https://m.media-amazon.com/images/M/MV5BNDYyNzM3OTEyOF5BMl5BanBnXkFtZTgwMDU5MDJhMjE@._V1_.jpg", rating: "9.0", year: "2013", lang: "Sub/Dub", isAnime: true },
-            { id: 85937, title: "Demon Slayer", type: "tv", poster: "https://m.media-amazon.com/images/M/MV5BZjZjNzI5MDctY2Y4YS00NmM4LTgwOTItYzUks2M2N2VhYWIwXkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_.jpg", rating: "8.7", year: "2019", lang: "Sub/Dub", isAnime: true },
-            { id: 30984, title: "Bleach", type: "tv", poster: "https://m.media-amazon.com/images/M/MV5BZjE0YjVjODItMTViYS00YjNmLWE4NDAtZTBjY2QwNmE5NWJmXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg", rating: "8.3", year: "2004", lang: "Sub/Dub", isAnime: true },
-            { id: 60572, title: "Dragon Ball Super", type: "tv", poster: "https://m.media-amazon.com/images/M/MV5BY2I2MzI1ODYtMWRlOS00M2JmLWFkNWItNWJiM2Y3ZWRkM2FiXkEyXkFqcGdeQXVyMjg1NDcxNDE@._V1_.jpg", rating: "8.1", year: "2015", lang: "Sub/Dub", isAnime: true },
-            { id: 31911, title: "Fullmetal Alchemist", type: "tv", poster: "https://m.media-amazon.com/images/M/MV5BMTNmN2NmMWItM2E2MS00NjhjLThhNDItYjljNDJhMTU5MTM5XkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg", rating: "8.7", year: "2009", lang: "Sub/Dub", isAnime: true },
-            { id: 93405, title: "Jujutsu Kaisen", type: "tv", poster: "https://m.media-amazon.com/images/M/MV5BNGY4MTg3NjgtMmFkIN00NTg5LWE3MDItOWUxM2U3AGY3ZTMyXkEyXkFqcGdeQXVyMTI2MTc2MDA3._V1_.jpg", rating: "8.5", year: "2020", lang: "Sub/Dub", isAnime: true },
-            { id: 46261, title: "Naruto Shippuden", type: "tv", poster: "https://m.media-amazon.com/images/M/MV5BZGFiMWFhNDAtMzUyS00MDgxLTlhNmEtMmI5YzA3MzA0ZmFiXkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_.jpg", rating: "8.7", year: "2007", lang: "Sub/Dub", isAnime: true }
-        ];
+        const TMDB_API_KEY = '15d2ea64021d46a192f0b70ed4b2cd35';
 
         let allMovies = [];
         let allAnime = [];
 
-        // ছবি প্রক্সি ইউআরএল (TMDB ছবি ব্লক থাকলে বাইপাস করার জন্য)
-        function getPosterUrl(path) {
-            if (!path) return 'https://via.placeholder.com/500x750/1e293b/ffffff?text=No+Poster';
-            if (path.startsWith('http')) return path;
-            return `https://images.weserv.nl/?url=https://image.tmdb.org/t/p/w500${path}`;
+        function getSafeImage(url) {
+            if (!url) return 'https://placehold.co/500x750/1e293b/ffffff?text=No+Poster';
+            return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
         }
 
-        async function fetchContent() {
+        async function fetchMultiSourceContent() {
             try {
-                // একাধিক পেজ থেকে API ফেচ
-                const [mRes1, mRes2, aRes1, aRes2] = await Promise.all([
-                    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=1`).catch(() => null),
-                    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=2`).catch(() => null),
-                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=16&with_original_language=ja&page=1`).catch(() => null),
-                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=16&with_original_language=ja&page=2`).catch(() => null)
-                ]);
+                // ১. TMDB API থেকে Movies ফেচ
+                const fetchMovies = fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&page=1`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.results) {
+                            return data.results.map(i => ({
+                                id: 'm_' + i.id,
+                                title: i.title || i.name,
+                                type: 'movie',
+                                poster: getSafeImage(i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : ''),
+                                rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
+                                year: (i.release_date || '2024').substring(0, 4),
+                                lang: 'Hindi/Eng'
+                            }));
+                        }
+                        return [];
+                    }).catch(() => []);
 
-                if (mRes1 && mRes1.ok) {
-                    const d1 = await mRes1.json();
-                    const d2 = mRes2 && mRes2.ok ? await mRes2.json() : { results: [] };
-                    const combined = [...(d1.results || []), ...(d2.results || [])];
-                    if (combined.length > 0) {
-                        allMovies = combined.map(i => ({
-                            id: i.id,
-                            title: i.title || i.name,
-                            type: 'movie',
-                            poster: getPosterUrl(i.poster_path),
-                            rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
-                            year: (i.release_date || '2024').substring(0, 4),
-                            lang: 'Hindi/Eng'
-                        }));
-                    }
-                }
+                // ২. Jikan API (MyAnimeList) থেকে Anime ফেচ
+                const fetchAnime = fetch(`https://api.jikan.moe/v4/top/anime?limit=25`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.data) {
+                            return data.data.map(i => ({
+                                id: 'a_' + i.mal_id,
+                                title: i.title_english || i.title,
+                                type: 'tv',
+                                poster: getSafeImage(i.images?.jpg?.large_image_url || i.images?.jpg?.image_url),
+                                rating: i.score ? i.score.toFixed(1) : '8.0',
+                                year: i.year || '2023',
+                                lang: 'Sub/Dub',
+                                isAnime: true
+                            }));
+                        }
+                        return [];
+                    }).catch(() => []);
 
-                if (aRes1 && aRes1.ok) {
-                    const d1 = await aRes1.json();
-                    const d2 = aRes2 && aRes2.ok ? await aRes2.json() : { results: [] };
-                    const combined = [...(d1.results || []), ...(d2.results || [])];
-                    if (combined.length > 0) {
-                        allAnime = combined.map(i => ({
-                            id: i.id,
-                            title: i.name || i.title,
-                            type: 'tv',
-                            poster: getPosterUrl(i.poster_path),
-                            rating: i.vote_average ? i.vote_average.toFixed(1) : '8.0',
-                            year: (i.first_air_date || '2024').substring(0, 4),
-                            lang: 'Sub/Dub',
-                            isAnime: true
-                        }));
-                    }
-                }
+                const [movies, anime] = await Promise.all([fetchMovies, fetchAnime]);
+
+                // ডুপ্লিকেট রিমুভ করার জন্য Unique Filter
+                allMovies = Array.from(new Map(movies.map(item => [item.title, item])).values());
+                allAnime = Array.from(new Map(anime.map(item => [item.title, item])).values());
+
+                renderGrid(allMovies, 'contentGrid');
+                renderGrid(allAnime, 'contentGrid2');
+
             } catch (err) {
-                console.log("Using backup dataset");
+                console.log("Error loading content");
             }
-
-            const finalMovies = allMovies.length > 0 ? allMovies : backupMovies;
-            const finalAnime = allAnime.length > 0 ? allAnime : backupAnime;
-
-            renderGrid(finalMovies, 'contentGrid');
-            renderGrid(finalAnime, 'contentGrid2');
         }
 
         function renderGrid(list, targetId) {
@@ -142,10 +114,14 @@
             list.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => window.location.href = `player.html?id=${item.id}&type=${item.type}`;
+                // অরিজিনাল আইডি বের করার জন্য প্রিফিক্স বাদ দেওয়া
+                const realId = item.id.replace(/^[ma]_/, '');
+                card.onclick = () => window.location.href = `player.html?id=${realId}&type=${item.type}`;
+                
+                const safeTitle = item.title.replace(/'/g, "");
                 card.innerHTML = `
                     <span class="lang-badge">${item.lang}</span>
-                    <img src="${item.poster}" alt="${item.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/500x750/1e293b/ffffff?text=${encodeURIComponent(item.title)}'">
+                    <img src="${item.poster}" alt="${safeTitle}" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/500x750/1e293b/ffffff?text=${encodeURIComponent(safeTitle)}'">
                     <div class="card-content">
                         <div class="card-title">${item.title}</div>
                         <div class="card-info">
@@ -166,31 +142,30 @@
             const t2 = document.getElementById('gridTitle2');
             const g2 = document.getElementById('contentGrid2');
 
-            const currentMovies = allMovies.length > 0 ? allMovies : backupMovies;
-            const currentAnime = allAnime.length > 0 ? allAnime : backupAnime;
-
             if (cat === 'all') {
                 t1.innerText = '🔥 Popular Movies';
-                t2.innerText = '⚡ Popular Anime';
+                t2.innerText = '⚡ Unlimited Anime Collection';
                 t2.style.display = 'flex';
                 g2.style.display = 'grid';
-                renderGrid(currentMovies, 'contentGrid');
-                renderGrid(currentAnime, 'contentGrid2');
+                renderGrid(allMovies, 'contentGrid');
+                renderGrid(allAnime, 'contentGrid2');
             } else if (cat === 'anime') {
                 t1.innerText = '⚡ All Anime Collection';
                 t2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid(currentAnime, 'contentGrid');
+                renderGrid(allAnime, 'contentGrid');
             } else if (cat === 'movie') {
                 t1.innerText = '🎬 All Movies Collection';
                 t2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid(currentMovies, 'contentGrid');
+                renderGrid(allMovies, 'contentGrid');
             } else if (cat === 'trending') {
                 t1.innerText = '🔥 Trending Content';
                 t2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid([...currentMovies, ...currentAnime], 'contentGrid');
+                // ট্রেন্ডিং ট্যাবে মুভি এবং অ্যানিমে একসাথে ইউনিক করে দেখাবে
+                const uniqueTrending = Array.from(new Map([...allMovies, ...allAnime].map(item => [item.title, item])).values());
+                renderGrid(uniqueTrending, 'contentGrid');
             }
         }
 
@@ -199,9 +174,6 @@
             const t1 = document.getElementById('gridTitle1');
             const t2 = document.getElementById('gridTitle2');
             const g2 = document.getElementById('contentGrid2');
-
-            const currentMovies = allMovies.length > 0 ? allMovies : backupMovies;
-            const currentAnime = allAnime.length > 0 ? allAnime : backupAnime;
 
             if (!q) {
                 switchTab('all', document.querySelector('.cat-pill.active'));
@@ -212,8 +184,48 @@
             t2.style.display = 'none';
             g2.style.display = 'none';
 
-            const filtered = [...currentMovies, ...currentAnime].filter(i => i.title.toLowerCase().includes(q));
-            renderGrid(filtered, 'contentGrid');
+            try {
+                const tmdbSearch = fetch(`https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(q)}`).then(r => r.json()).catch(() => null);
+                const jikanSearch = fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(q)}&limit=10`).then(r => r.json()).catch(() => null);
+
+                const [tmdbRes, jikanRes] = await Promise.all([tmdbSearch, jikanSearch]);
+
+                let results = [];
+
+                if (tmdbRes && tmdbRes.results) {
+                    tmdbRes.results.forEach(i => {
+                        results.push({
+                            id: 'm_' + i.id,
+                            title: i.title || i.name,
+                            type: i.media_type === 'tv' ? 'tv' : 'movie',
+                            poster: getSafeImage(i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : ''),
+                            rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
+                            year: (i.release_date || i.first_air_date || '2024').substring(0, 4),
+                            lang: 'Hindi/Eng'
+                        });
+                    });
+                }
+
+                if (jikanRes && jikanRes.data) {
+                    jikanRes.data.forEach(i => {
+                        results.push({
+                            id: 'a_' + i.mal_id,
+                            title: i.title_english || i.title,
+                            type: 'tv',
+                            poster: getSafeImage(i.images?.jpg?.large_image_url),
+                            rating: i.score ? i.score.toFixed(1) : '8.0',
+                            year: i.year || '2023',
+                            lang: 'Sub/Dub'
+                        });
+                    });
+                }
+
+                // সার্চ রেজাল্ট থেকেও ডুপ্লিকেট রিমুভ করা
+                const uniqueResults = Array.from(new Map(results.map(item => [item.title, item])).values());
+                renderGrid(uniqueResults, 'contentGrid');
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         if (typeof renderAdBanner === 'function') {
@@ -221,7 +233,7 @@
             renderAdBanner('homeMiddleAd');
         }
 
-        fetchContent();
+        fetchMultiSourceContent();
     </script>
 </body>
 </html>
