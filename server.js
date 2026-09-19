@@ -12,7 +12,7 @@ app.get('/api/content', async (req, res) => {
     try {
         const tmdbApiKey = process.env.TMDB_API_KEY || '826b580ea81021a504b92880d44cf7d9';
         
-        // Fetch Movies
+        // Fetch Trending Movies
         const movieRes = await axios.get(`https://api.themoviedb.org/3/trending/movie/week?api_key=${tmdbApiKey}`);
         const movies = movieRes.data.results.slice(0, 10).map(m => ({
             id: m.id,
@@ -22,7 +22,7 @@ app.get('/api/content', async (req, res) => {
             type: 'movie'
         }));
 
-        // Fetch Anime using TMDB Animation Keyword search
+        // Fetch Top Japanese Anime Series using TMDB
         const animeRes = await axios.get(`https://api.themoviedb.org/3/discover/tv?api_key=${tmdbApiKey}&with_genres=16&with_original_language=ja&sort_by=popularity.desc`);
         const anime = animeRes.data.results.slice(0, 10).map(a => ({
             id: a.id,
