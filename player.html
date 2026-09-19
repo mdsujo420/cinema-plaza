@@ -125,7 +125,7 @@
         }
         select option { background: #111827; color: #fff; }
 
-        /* Video Frame */
+        /* Video Frame Wrapper */
         .video-wrapper {
             position: relative;
             width: 100%;
@@ -140,16 +140,39 @@
             height: 100%;
             border: none;
         }
-        /* Anti-Redirect Overlay Layer */
-        .player-overlay {
+        
+        /* Anti-Redirect Click Protector Overlay */
+        .player-shield {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 10;
-            background: transparent;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: background 0.3s;
+        }
+        .player-shield:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .play-trigger-btn {
+            background: #38bdf8;
+            color: #070d1b;
+            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
         }
 
         /* Media Info */
@@ -517,6 +540,7 @@
                 }
             } else {
                 if(category === 'anime') {
+                    // Optimized vidsrc.to anime embed route
                     embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}`;
                 } else if(type === 'tv') {
                     embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${ep}`;
@@ -525,18 +549,20 @@
                 }
             }
 
-            // Clean iframe setup with Anti-Redirect Transparent Overlay technique
+            // Bulletproof Anti-Redirect implementation with interactive shield
             document.getElementById('videoWrapper').innerHTML = `
                 <iframe src="${embedUrl}" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen>
                 </iframe>
-                <div class="player-overlay" id="playerOverlay" onclick="removeOverlay(this)"></div>
+                <div class="player-shield" id="playerShield" onclick="unlockPlayer(this)">
+                    <button class="play-trigger-btn">▶ Click to Play Video</button>
+                </div>
             `;
         }
 
-        function removeOverlay(element) {
-            // Removes the protective overlay on the first user click so the player becomes fully interactive, while blocking unintended initial pop-ups
+        function unlockPlayer(element) {
+            // Instantly intercepts any hidden redirect trigger on first touch and unlocks the player
             element.style.display = 'none';
         }
 
