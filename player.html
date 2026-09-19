@@ -1,193 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream - Movebox Plaza</title>
+    <title>Watch - Movie Plaza</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">🍿 Movebox</a>
+        <a href="index.html" class="logo">🎬 Movie Plaza</a>
         <div class="search-bar">
-            <input type="text" placeholder="Search Movies / TV Shows..." onclick="window.location.href='index.html'">
+            <input type="text" id="searchInput" placeholder="Search Movies / Anime..." onkeypress="if(event.key === 'Enter') searchRedirect()">
         </div>
     </header>
 
-    <div class="player-page-container">
-        
-        <!-- Video Player Box + Side Resources -->
-        <div class="player-flex">
-            
-            <div class="main-video-box">
-                <!-- Multi Server Switcher for Smooth Playback -->
-                <div class="server-selector">
-                    <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 700;">SERVER:</span>
-                    <button class="server-btn active" onclick="switchServer(1, this)">Server 1 (Fast)</button>
-                    <button class="server-btn" onclick="switchServer(2, this)">Server 2 (HD)</button>
-                    <button class="server-btn" onclick="switchServer(3, this)">Server 3 (Multi-Lang)</button>
-                </div>
-
-                <div class="iframe-wrapper">
-                    <iframe id="videoIframe" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-                </div>
-            </div>
-
-            <!-- Episodes & Season Grid Box -->
-            <div class="resources-sidebar">
-                <div class="res-header">Resources</div>
-                <div id="seasonContainer" class="season-buttons"></div>
-                <div id="episodesGrid" class="episodes-grid-box"></div>
-            </div>
-
+    <div class="player-container">
+        <div class="servers-bar">
+            <span style="color: #94a3b8; font-weight: 600; font-size: 14px;">SERVER:</span>
+            <button class="server-btn active" onclick="changeServer(1, this)">Server 1 (Fast)</button>
+            <button class="server-btn" onclick="changeServer(2, this)">Server 2 (HD)</button>
+            <button class="server-btn" onclick="changeServer(3, this)">Server 3 (Multi-Lang)</button>
         </div>
 
-        <!-- 4 Ad Spaces Right Below the Video Player (Movebox Screenshot Design) -->
-        <div class="ad-grid-row">
-            <div id="playerAd1"></div>
-            <div id="playerAd2"></div>
-            <div id="playerAd3"></div>
-            <div id="playerAd4"></div>
+        <div class="video-wrapper">
+            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
         </div>
 
-        <!-- Movie/Anime Information & Cast -->
-        <div class="content-details-card">
-            <h1 id="mediaTitle" style="font-size: 1.5rem; color: #fff;">Loading...</h1>
-            <p id="mediaDesc" style="color: #94a3b8; font-size: 0.9rem; margin-top: 8px; line-height: 1.5;"></p>
-
-            <div style="margin-top: 20px;">
-                <h3 style="font-size: 1rem; color: #f8fafc; margin-bottom: 10px;">Top Cast</h3>
-                <div id="castList" class="cast-row"></div>
-            </div>
+        <div class="details-card" id="detailsCard">
+            <h2 id="movieTitle" style="color: #fff; font-size: 20px; margin-bottom: 5px;">Loading...</h2>
+            <p id="movieGenres" style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;"></p>
+            <h3 style="color: #fff; font-size: 16px; margin-bottom: 10px;">Top Cast</h3>
+            <div id="castList" style="color: #94a3b8; font-size: 14px;">Loading cast...</div>
         </div>
-
     </div>
 
-    <script src="ads.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
-        const type = urlParams.get('type') || 'tv';
+        const type = urlParams.get('type') || 'movie';
 
-        const TMDB_API_KEY = '15d2ea64021d46a192f0b70ed4b2cd35';
-        let currentS = 1;
-        let currentE = 1;
-        let currentServer = 1;
+        const iframe = document.getElementById('videoPlayer');
 
-        async function initPlayer() {
-            if(!id) return;
-
-            if(type === 'movie') {
-                document.querySelector('.resources-sidebar').style.display = 'none';
-                updatePlayerUrl();
-                fetchMovieDetails();
-            } else {
-                fetchSeriesDetails();
-            }
-
-            // Render Ads Under Player
-            renderAdBanner('playerAd1', 'banner');
-            renderAdBanner('playerAd2', 'banner');
-            renderAdBanner('playerAd3', 'banner');
-            renderAdBanner('playerAd4', 'banner');
-        }
-
-        function switchServer(serverNum, btn) {
-            currentServer = serverNum;
+        function changeServer(serverNum, btn) {
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            updatePlayerUrl();
-        }
 
-        function updatePlayerUrl() {
-            const iframe = document.getElementById('videoIframe');
-            
-            if(currentServer === 1) {
-                iframe.src = type === 'movie' ? `https://vidsrc.cc/v2/embed/movie/${id}` : `https://vidsrc.cc/v2/embed/tv/${id}/${currentS}/${currentE}`;
-            } else if(currentServer === 2) {
-                iframe.src = type === 'movie' ? `https://vidsrc.pro/embed/movie/${id}` : `https://vidsrc.pro/embed/tv/${id}/${currentS}/${currentE}`;
-            } else {
-                iframe.src = type === 'movie' ? `https://embed.su/embed/movie/${id}` : `https://embed.su/embed/tv/${id}/${currentS}/${currentE}`;
+            if (serverNum === 1) {
+                iframe.src = `https://vidsrc.xyz/embed/${type}?tmdb=${id}`;
+            } else if (serverNum === 2) {
+                iframe.src = `https://vidsrc.to/embed/${type}/${id}`;
+            } else if (serverNum === 3) {
+                iframe.src = `https://embed.su/embed/${type}/${id}`;
             }
         }
 
-        async function fetchMovieDetails() {
+        // ডিফল্ট প্রথম সার্ভার লোড করা
+        iframe.src = `https://vidsrc.xyz/embed/${type}?tmdb=${id}`;
+
+        // মুভির বিস্তারিত তথ্য আনার জন্য API কল
+        async function fetchDetails() {
+            const TMDB_API_KEYS = [
+                '1a878c977c07619736ef416785671db8',
+                '9e303205ce05a268cb89dfaa06b3f1f0',
+                'aab07fec041a520555467df59e5a4f64'
+            ];
+            const apiKey = TMDB_API_KEYS[0];
+
             try {
-                const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`);
+                const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${apiKey}&append_to_response=credits`);
                 const data = await res.json();
-                document.getElementById('mediaTitle').innerText = data.title;
-                document.getElementById('mediaDesc').innerText = data.overview;
-                renderCast(data.credits ? data.credits.cast : []);
-            } catch(e) {}
-        }
 
-        async function fetchSeriesDetails() {
-            try {
-                const res = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&append_to_response=credits`);
-                const data = await res.json();
-                document.getElementById('mediaTitle').innerText = data.name;
-                document.getElementById('mediaDesc').innerText = data.overview;
-                renderCast(data.credits ? data.credits.cast : []);
+                if (data) {
+                    document.getElementById('movieTitle').innerText = data.title || data.name || 'Unknown Title';
+                    const genres = data.genres ? data.genres.map(g => g.name).join(', ') : '';
+                    const year = (data.release_date || data.first_air_date || '').substring(0, 4);
+                    document.getElementById('movieGenres').innerText = `${year} • ${genres}`;
 
-                const sContainer = document.getElementById('seasonContainer');
-                sContainer.innerHTML = '';
-                
-                const validSeasons = (data.seasons || []).filter(s => s.season_number > 0);
-                validSeasons.forEach((season, idx) => {
-                    const btn = document.createElement('button');
-                    btn.className = `s-btn ${idx === 0 ? 'active' : ''}`;
-                    btn.innerText = `S0${season.season_number}`;
-                    btn.onclick = () => selectSeason(season.season_number, season.episode_count, btn);
-                    sContainer.appendChild(btn);
-                });
-
-                if(validSeasons.length > 0) {
-                    selectSeason(validSeasons[0].season_number, validSeasons[0].episode_count, sContainer.children[0]);
+                    if (data.credits && data.credits.cast) {
+                        const castNames = data.credits.cast.slice(0, 5).map(c => c.name).join(', ');
+                        document.getElementById('castList').innerText = castNames || 'No cast info available';
+                    }
                 }
-            } catch(e) {}
-        }
-
-        function selectSeason(sNum, epCount, btn) {
-            currentS = sNum;
-            currentE = 1;
-            document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-
-            const epGrid = document.getElementById('episodesGrid');
-            epGrid.innerHTML = '';
-
-            for(let i = 1; i <= epCount; i++) {
-                const ep = document.createElement('div');
-                ep.className = `ep-box-item ${i === 1 ? 'active' : ''}`;
-                ep.innerText = i < 10 ? `0${i}` : i;
-                ep.onclick = () => {
-                    currentE = i;
-                    document.querySelectorAll('.ep-box-item').forEach(b => b.classList.remove('active'));
-                    ep.classList.add('active');
-                    updatePlayerUrl();
-                };
-                epGrid.appendChild(ep);
+            } catch (e) {
+                console.log("Error loading details");
             }
-            updatePlayerUrl();
         }
 
-        function renderCast(cast) {
-            const castContainer = document.getElementById('castList');
-            castContainer.innerHTML = '';
-            (cast || []).slice(0, 10).forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'cast-item';
-                div.innerHTML = `
-                    <img src="${c.profile_path ? 'https://image.tmdb.org/t/p/w185' + c.profile_path : 'https://via.placeholder.com/100'}" alt="${c.name}">
-                    <div class="cast-name">${c.name}</div>
-                `;
-                castContainer.appendChild(div);
-            });
+        function searchRedirect() {
+            const q = document.getElementById('searchInput').value;
+            if(q) window.location.href = `index.html?search=${encodeURIComponent(q)}`;
         }
 
-        initPlayer();
+        fetchDetails();
     </script>
 </body>
 </html>
