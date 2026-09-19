@@ -21,7 +21,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 5%;
+            padding: 10px 12px;
             background: rgba(7, 13, 27, 0.95);
             position: sticky;
             top: 0;
@@ -32,44 +32,45 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
         }
         .menu-toggle {
             background: none;
             border: none;
             color: #38bdf8;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
-            transition: 0.2s;
-        }
-        .menu-toggle:hover {
-            color: #38ef7d;
         }
         .logo {
-            font-size: 24px;
+            font-size: 15px;
             font-weight: 800;
             background: linear-gradient(135deg, #38bdf8, #38ef7d);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+            letter-spacing: 0.3px;
+            line-height: 1.1;
         }
         .search-bar input {
-            padding: 9px 16px;
-            width: 220px;
+            padding: 6px 10px;
+            width: 130px;
             background: #111827;
             border: 1px solid #374151;
-            border-radius: 10px;
+            border-radius: 6px;
             color: #fff;
             outline: none;
-            font-size: 13px;
+            font-size: 11px;
             transition: 0.3s;
         }
         .search-bar input:focus {
             border-color: #38bdf8;
-            width: 260px;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+            width: 170px;
+        }
+        @media (min-width: 768px) {
+            header { padding: 15px 5%; }
+            .logo { font-size: 24px; }
+            .search-bar input { width: 220px; font-size: 13px; }
+            .search-bar input:focus { width: 260px; }
         }
 
         /* Sidebar Drawer */
@@ -86,9 +87,7 @@
             padding: 25px;
             box-shadow: 5px 0 25px rgba(0,0,0,0.5);
         }
-        .sidebar.open {
-            left: 0;
-        }
+        .sidebar.open { left: 0; }
         .sidebar-header {
             display: flex;
             justify-content: space-between;
@@ -97,21 +96,9 @@
             border-bottom: 1px solid #1e293b;
             padding-bottom: 15px;
         }
-        .sidebar-logo {
-            font-size: 20px;
-            font-weight: 800;
-            color: #38bdf8;
-        }
-        .close-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        .sidebar-menu {
-            list-style: none;
-        }
+        .sidebar-logo { font-size: 20px; font-weight: 800; color: #38bdf8; }
+        .close-btn { background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; }
+        .sidebar-menu { list-style: none; }
         .sidebar-menu li {
             padding: 12px 16px;
             margin-bottom: 10px;
@@ -120,311 +107,158 @@
             color: #cbd5e1;
             font-weight: 600;
             font-size: 14px;
-            transition: 0.2s;
             display: flex;
             align-items: center;
             gap: 12px;
             background: #111827;
             border: 1px solid #1f2937;
         }
-        .sidebar-menu li:hover {
-            background: #1e293b;
-            color: #38bdf8;
-            border-color: #38bdf8;
-            transform: translateX(5px);
-        }
         .overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
             z-index: 1500;
             display: none;
             backdrop-filter: blur(4px);
         }
-        .overlay.active {
-            display: block;
-        }
+        .overlay.active { display: block; }
 
         /* Categories Bar */
         .categories {
             display: flex;
-            gap: 12px;
-            padding: 15px 5%;
+            gap: 10px;
+            padding: 12px 4%;
             background: #090e1a;
             border-bottom: 1px solid #1e293b;
             overflow-x: auto;
         }
-        .categories::-webkit-scrollbar {
-            display: none;
-        }
+        .categories::-webkit-scrollbar { display: none; }
         .cat-pill {
             background: #111827;
             border: 1px solid #374151;
             color: #cbd5e1;
-            padding: 8px 20px;
-            border-radius: 25px;
+            padding: 6px 16px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             white-space: nowrap;
-            transition: 0.3s;
         }
-        .cat-pill.active, .cat-pill:hover {
+        .cat-pill.active {
             background: linear-gradient(135deg, #38bdf8, #0284c7);
             color: #070d1b;
             border-color: #38bdf8;
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
         }
 
         /* Hero Slider */
         .hero-slider {
             position: relative;
-            width: 90%;
-            height: 380px;
-            margin: 25px auto;
-            border-radius: 16px;
+            width: 92%;
+            height: 220px;
+            margin: 15px auto;
+            border-radius: 14px;
             overflow: hidden;
             background: #111827;
             border: 1px solid #374151;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        @media (min-width: 768px) {
+            .hero-slider { width: 90%; height: 380px; margin: 20px auto; }
         }
         .slide {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0;
             transition: opacity 0.8s ease-in-out;
             display: flex;
             align-items: center;
         }
-        .slide.active {
-            opacity: 1;
-        }
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.45);
-        }
-        .slide-content {
-            position: absolute;
-            bottom: 35px;
-            left: 35px;
-            right: 35px;
-            z-index: 2;
+        .slide.active { opacity: 1; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.45); }
+        .slide-content { position: absolute; bottom: 15px; left: 15px; right: 15px; z-index: 2; }
+        @media (min-width: 768px) {
+            .slide-content { bottom: 35px; left: 35px; right: 35px; }
         }
         .slide-badge {
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 5px 12px;
-            border-radius: 6px;
-            display: inline-block;
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            color: #fff; font-size: 9px; font-weight: 800;
+            padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px;
         }
-        .slide-title {
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            color: #fff;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
-        }
-        .slide-desc {
-            font-size: 13px;
-            color: #cbd5e1;
-            margin-bottom: 15px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            max-width: 700px;
-        }
+        .slide-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; color: #fff; }
+        @media (min-width: 768px) { .slide-title { font-size: 26px; } }
+        .slide-desc { font-size: 11px; color: #cbd5e1; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .watch-btn {
             background: linear-gradient(135deg, #38bdf8, #0284c7);
-            color: #070d1b;
-            border: none;
-            padding: 9px 20px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.2s;
-        }
-        .watch-btn:hover {
-            transform: scale(1.05);
+            color: #070d1b; border: none; padding: 6px 14px; font-weight: 700;
+            border-radius: 6px; cursor: pointer; font-size: 11px;
         }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 35px 5% 15px;
-        }
-        .section-title {
-            font-size: 19px;
-            font-weight: 700;
-            color: #f8fafc;
-            border-left: 4px solid #38bdf8;
-            padding-left: 10px;
-        }
+        .section-header { margin: 20px 4% 10px; }
+        @media (min-width: 768px) { .section-header { margin: 35px 5% 15px; } }
+        .section-title { font-size: 15px; font-weight: 700; color: #f8fafc; border-left: 4px solid #38bdf8; padding-left: 8px; }
+
+        /* Double Grid on Mobile & Responsive Grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 18px;
-            padding: 0 5% 40px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 0 4% 40px;
+        }
+        @media (min-width: 768px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 18px; padding: 0 5% 40px; }
         }
         .card {
             background: #111827;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.25s, box-shadow 0.25s;
             position: relative;
             border: 1px solid #1f2937;
         }
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 24px rgba(56, 189, 248, 0.25);
-            border-color: #38bdf8;
-        }
         .card img {
             width: 100%;
-            height: 230px;
+            height: 140px;
             object-fit: cover;
             display: block;
         }
+        @media (min-width: 768px) {
+            .card img { height: 240px; }
+        }
         .lang-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(15, 23, 42, 0.85);
-            color: #38bdf8;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 6px;
+            position: absolute; top: 6px; right: 6px;
+            background: rgba(15, 23, 42, 0.85); color: #38bdf8;
+            font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 3px;
             border: 1px solid #38bdf8;
-            backdrop-filter: blur(4px);
         }
-        .card-content {
-            padding: 12px;
-        }
+        .card-content { padding: 8px; }
         .card-title {
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 6px;
+            font-size: 11px; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;
         }
-        .card-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: #94a3b8;
-        }
-        .loader {
-            text-align: center;
-            padding: 50px;
-            color: #38bdf8;
-            font-size: 16px;
-            font-weight: 600;
-            grid-column: 1 / -1;
-        }
+        @media (min-width: 768px) { .card-title { font-size: 13px; } }
+        .card-info { display: flex; justify-content: space-between; font-size: 9px; color: #94a3b8; }
+        .loader { text-align: center; padding: 40px; color: #38bdf8; font-size: 14px; grid-column: 1 / -1; }
 
-        /* Fully Functional Modal System */
+        /* Modal System */
         .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
+            position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0.9);
-            background: #0b132b;
-            border: 1px solid #374151;
-            padding: 30px;
-            border-radius: 16px;
-            z-index: 3000;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-            opacity: 0;
-            pointer-events: none;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #0b132b; border: 1px solid #374151;
+            padding: 25px; border-radius: 14px; z-index: 3000;
+            width: 90%; max-width: 400px; opacity: 0; pointer-events: none;
+            transition: 0.3s;
         }
-        .modal.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        .modal h3 {
-            margin-bottom: 12px;
-            color: #38bdf8;
-            font-size: 20px;
-        }
-        .modal p {
-            color: #cbd5e1;
-            font-size: 13px;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 5px;
-        }
-        .modal input {
-            width: 100%;
-            padding: 10px 14px;
-            background: #111827;
-            border: 1px solid #374151;
-            border-radius: 8px;
-            color: #fff;
-            outline: none;
-            font-size: 14px;
-        }
-        .modal input:focus {
-            border-color: #38bdf8;
-        }
-        .modal-btn {
-            background: #38bdf8;
-            color: #070d1b;
-            border: none;
-            padding: 11px 20px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            transition: 0.2s;
-        }
-        .modal-btn:hover {
-            background: #0ea5e9;
-        }
-        .close-modal-x {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 18px;
-            cursor: pointer;
-        }
+        .modal.active { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+        .modal h3 { margin-bottom: 10px; color: #38bdf8; font-size: 18px; }
+        .modal p { color: #cbd5e1; font-size: 12px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+        .modal input { width: 100%; padding: 9px 12px; background: #111827; border: 1px solid #374151; border-radius: 6px; color: #fff; font-size: 13px; outline: none; }
+        .modal-btn { background: #38bdf8; color: #070d1b; border: none; padding: 10px; font-weight: 700; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 8px; }
+        .close-modal-x { position: absolute; top: 12px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar Menu -->
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -438,11 +272,10 @@
             <li onclick="switchCategory('kdrama'); toggleSidebar();">🇰🇷 Trending K-Dramas</li>
             <li onclick="openAuthModal('signin');">👤 Sign In / Sign Up</li>
             <li onclick="openFavoritesModal();">⭐ My Favorites</li>
-            <li onclick="openSettingsModal();">⚙️ Settings & Preferences</li>
+            <li onclick="openSettingsModal();">⚙️ Settings</li>
         </ul>
     </div>
 
-    <!-- Active Modal System -->
     <div class="overlay" id="modalOverlay" onclick="closeModal()"></div>
     <div class="modal" id="activeModal">
         <button class="close-modal-x" onclick="closeModal()">✕</button>
@@ -455,36 +288,30 @@
             <a href="index.html" class="logo">✨ Movie Plaza</a>
         </div>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search Movies, Anime, K-Drama..." onkeypress="if(event.key === 'Enter') searchContent()">
+            <input type="text" id="searchInput" placeholder="Search..." onkeypress="if(event.key === 'Enter') searchContent()">
         </div>
     </header>
 
-    <!-- Category Bar -->
     <div class="categories">
         <div class="cat-pill active" onclick="switchCategory('home', this)">🏠 Home</div>
-        <div class="cat-pill" onclick="switchCategory('movies', this)">🎬 Trending Movies</div>
-        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ Top Trending Anime</div>
-        <div class="cat-pill" onclick="switchCategory('kdrama', this)">🇰🇷 Trending K-Dramas</div>
+        <div class="cat-pill" onclick="switchCategory('movies', this)">🎬 Movies</div>
+        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ Anime</div>
+        <div class="cat-pill" onclick="switchCategory('kdrama', this)">🇰🇷 K-Dramas</div>
     </div>
 
-    <!-- Hero Slider -->
     <div class="hero-slider" id="heroSlider">
-        <div class="loader" style="padding-top: 150px;">Loading dynamic trending banner...</div>
+        <div class="loader" style="padding-top: 80px;">Loading banner...</div>
     </div>
 
-    <!-- Content Section -->
     <div class="section-header">
         <div class="section-title" id="mainTitle1">🔥 Trending Feed & Popular Collections</div>
     </div>
     <div class="grid" id="contentGrid1">
-        <div class="loader">Loading high-limit massive media catalog...</div>
+        <div class="loader">Loading catalog...</div>
     </div>
 
     <script>
-        let moviesData = [];
-        let animeData = [];
-        let kdramaData = [];
-        let sliderItems = [];
+        let moviesData = [], animeData = [], kdramaData = [], sliderItems = [];
 
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
@@ -503,234 +330,81 @@
             document.getElementById('modalOverlay').classList.add('active');
         }
 
-        // Authentication System Functionality
         function openAuthModal(mode = 'signin') {
             const isUserLoggedIn = localStorage.getItem('mp_user');
             if(isUserLoggedIn) {
-                openModalHTML(`
-                    <h3>👤 Account Profile</h3>
-                    <p>You are logged in as <b>${isUserLoggedIn}</b>.</p>
-                    <button class="modal-btn" onclick="logoutUser()" style="background:#ef4444; color:#fff;">Sign Out</button>
-                `);
+                openModalHTML(`<h3>👤 Profile</h3><p>Logged in as <b>${isUserLoggedIn}</b>.</p><button class="modal-btn" onclick="logoutUser()" style="background:#ef4444; color:#fff;">Sign Out</button>`);
                 return;
             }
-
             if(mode === 'signin') {
-                openModalHTML(`
-                    <h3>Sign In to Movie Plaza</h3>
-                    <p>Access your personalized watchlist, cloud sync and settings.</p>
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="authEmail" placeholder="name@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="authPass" placeholder="••••••••">
-                    </div>
-                    <button class="modal-btn" onclick="handleLogin()">Sign In</button>
-                    <p style="margin-top:15px; text-align:center; font-size:12px;">Don't have an account? <a href="#" onclick="openAuthModal('signup'); return false;" style="color:#38bdf8;">Sign Up</a></p>
-                `);
+                openModalHTML(`<h3>Sign In</h3><div class="form-group"><label>Email</label><input type="email" id="authEmail" placeholder="email@example.com"></div><div class="form-group"><label>Password</label><input type="password" id="authPass" placeholder="••••••••"></div><button class="modal-btn" onclick="handleLogin()">Sign In</button><p style="margin-top:12px; text-align:center; font-size:11px;">No account? <a href="#" onclick="openAuthModal('signup'); return false;" style="color:#38bdf8;">Sign Up</a></p>`);
             } else {
-                openModalHTML(`
-                    <h3>Create New Account</h3>
-                    <p>Join Movie Plaza to unlock unlimited streaming features.</p>
-                    <div class="form-group">
-                        <label>Your Name</label>
-                        <input type="text" id="regName" placeholder="Sujon">
-                    </div>
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="regEmail" placeholder="name@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="regPass" placeholder="••••••••">
-                    </div>
-                    <button class="modal-btn" onclick="handleRegister()">Sign Up Now</button>
-                    <p style="margin-top:15px; text-align:center; font-size:12px;">Already have an account? <a href="#" onclick="openAuthModal('signin'); return false;" style="color:#38bdf8;">Sign In</a></p>
-                `);
+                openModalHTML(`<h3>Sign Up</h3><div class="form-group"><label>Name</label><input type="text" id="regName" placeholder="Sujon"></div><div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="email@example.com"></div><div class="form-group"><label>Password</label><input type="password" id="regPass" placeholder="••••••••"></div><button class="modal-btn" onclick="handleRegister()">Sign Up</button><p style="margin-top:12px; text-align:center; font-size:11px;">Have account? <a href="#" onclick="openAuthModal('signin'); return false;" style="color:#38bdf8;">Sign In</a></p>`);
             }
         }
 
         function handleLogin() {
             const email = document.getElementById('authEmail').value.trim();
-            if(!email) {
-                alert('Please enter your email!');
-                return;
-            }
+            if(!email) { alert('Enter email'); return; }
             localStorage.setItem('mp_user', email);
-            alert('Successfully signed in!');
-            closeModal();
+            alert('Signed in!'); closeModal();
         }
 
         function handleRegister() {
-            const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
-            if(!name || !email) {
-                alert('Please fill in all details!');
-                return;
-            }
+            if(!email) { alert('Enter details'); return; }
             localStorage.setItem('mp_user', email);
-            alert('Account created and logged in successfully!');
-            closeModal();
+            alert('Registered & Logged in!'); closeModal();
         }
 
         function logoutUser() {
             localStorage.removeItem('mp_user');
-            alert('Signed out successfully.');
-            closeModal();
+            alert('Signed out.'); closeModal();
         }
 
-        function openFavoritesModal() {
-            openModalHTML(`
-                <h3>⭐ My Favorites & Watchlist</h3>
-                <p>Your saved bookmarks and favorite series will appear here.</p>
-                <div style="background:#111827; padding:15px; border-radius:8px; text-align:center; color:#94a3b8; font-size:13px;">No favorites added yet. Click items to manage.</div>
-            `);
-        }
+        function openFavoritesModal() { openModalHTML(`<h3>⭐ My Favorites</h3><p>Your saved bookmarks will appear here.</p>`); }
+        function openSettingsModal() { openModalHTML(`<h3>⚙️ Settings</h3><p>Streaming quality: 1080p</p>`); }
 
-        function openSettingsModal() {
-            openModalHTML(`
-                <h3>⚙️ Settings & Preferences</h3>
-                <p>Configure stream quality and player defaults.</p>
-                <div class="form-group">
-                    <label>Default Streaming Quality</label>
-                    <input type="text" value="1080p Full HD (Auto)" disabled>
-                </div>
-                <button class="modal-btn" onclick="closeModal()">Save Preferences</button>
-            `);
-        }
-
-        // Data Fetching with High Limits & Reliable Fallbacks
         async function fetchAllData() {
             try {
-                // Fetching Movies & K-Dramas from TMDb (Increased Pages for High Limit)
-                const moviePromises = [];
-                const kdramaPromises = [];
-                for(let p = 1; p <= 15; p++) {
-                    moviePromises.push(
-                        fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${p}`)
-                            .then(res => res.json()).then(d => d.results || []).catch(() => [])
-                    );
-                    kdramaPromises.push(
-                        fetch(`https://api.themoviedb.org/3/discover/tv?api_key=1a878c977c07619736ef416785671db8&with_original_language=ko&sort_by=popularity.desc&page=${p}`)
-                            .then(res => res.json()).then(d => d.results || []).catch(() => [])
-                    );
-                }
-
-                // Fetching Anime from Jikan API with Robust Error Handling & Rate Limiting protection
-                const animePromises = [];
+                const moviePromises = [], kdramaPromises = [];
                 for(let p = 1; p <= 10; p++) {
-                    animePromises.push(
-                        fetch(`https://api.jikan.moe/v4/top/anime?page=${p}`)
-                            .then(res => res.json())
-                            .then(d => d.data || [])
-                            .catch(() => [])
-                    );
+                    moviePromises.push(fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${p}`).then(res => res.json()).then(d => d.results || []).catch(() => []));
+                    kdramaPromises.push(fetch(`https://api.themoviedb.org/3/discover/tv?api_key=1a878c977c07619736ef416785671db8&with_original_language=ko&sort_by=popularity.desc&page=${p}`).then(res => res.json()).then(d => d.results || []).catch(() => []));
                 }
+                const animePromises = [];
+                for(let p = 1; p <= 8; p++) {
+                    animePromises.push(fetch(`https://api.jikan.moe/v4/top/anime?page=${p}`).then(res => res.json()).then(d => d.data || []).catch(() => []));
+                }
+                const [mPages, kPages, aPages] = await Promise.all([Promise.all(moviePromises), Promise.all(kdramaPromises), Promise.all(animePromises)]);
 
-                const [mPages, kPages, aPages] = await Promise.all([
-                    Promise.all(moviePromises),
-                    Promise.all(kdramaPromises),
-                    Promise.all(animePromises)
-                ]);
+                moviesData = Array.from(new Map(mPages.flat().map(i => [i.id, { id: 'm_' + i.id, realId: i.id, title: i.title || i.name, type: 'movie', poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '', backdrop: i.backdrop_path ? `https://image.tmdb.org/t/p/w1280${i.backdrop_path}` : '', rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5', year: (i.release_date || '2026').substring(0, 4), overview: i.overview || '', lang: 'Hindi/Eng', category: 'movie' }])).values());
+                
+                kdramaData = Array.from(new Map(kPages.flat().map(i => [i.id, { id: 'k_' + i.id, realId: i.id, title: i.name || i.title, type: 'tv', poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '', backdrop: i.backdrop_path ? `https://image.tmdb.org/t/p/w1280${i.backdrop_path}` : '', rating: i.vote_average ? i.vote_average.toFixed(1) : '8.2', year: (i.first_air_date || '2026').substring(0, 4), overview: i.overview || '', lang: 'Korean/Sub', category: 'kdrama' }])).values());
 
-                // Process Movies
-                const movieMap = new Map();
-                mPages.flat().forEach(i => {
-                    if(i && i.id) {
-                        movieMap.set(i.id, {
-                            id: 'm_' + i.id,
-                            realId: i.id,
-                            title: i.title || i.name,
-                            type: 'movie',
-                            poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
-                            backdrop: i.backdrop_path ? `https://image.tmdb.org/t/p/w1280${i.backdrop_path}` : '',
-                            rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
-                            year: (i.release_date || '2026').substring(0, 4),
-                            overview: i.overview || 'Trending movie on Movie Plaza.',
-                            lang: 'Hindi/Eng',
-                            category: 'movie'
-                        });
-                    }
-                });
-                moviesData = Array.from(movieMap.values());
+                animeData = Array.from(new Map(aPages.flat().map(i => [i.mal_id, { id: 'a_' + i.mal_id, realId: i.mal_id, title: i.title_english || i.title, type: 'tv', poster: i.images?.jpg?.large_image_url || '', backdrop: i.images?.jpg?.large_image_url || '', rating: i.score ? i.score.toFixed(1) : '8.0', year: i.year || '2026', overview: i.synopsis || '', lang: 'Sub/Dub', category: 'anime' }])).values());
 
-                // Process K-Dramas (TV Series with Seasons support)
-                const kdramaMap = new Map();
-                kPages.flat().forEach(i => {
-                    if(i && i.id) {
-                        kdramaMap.set(i.id, {
-                            id: 'k_' + i.id,
-                            realId: i.id,
-                            title: i.name || i.title,
-                            type: 'tv',
-                            poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
-                            backdrop: i.backdrop_path ? `https://image.tmdb.org/t/p/w1280${i.backdrop_path}` : '',
-                            rating: i.vote_average ? i.vote_average.toFixed(1) : '8.2',
-                            year: (i.first_air_date || '2026').substring(0, 4),
-                            overview: i.overview || 'Popular K-Drama series.',
-                            lang: 'Korean/Sub',
-                            category: 'kdrama'
-                        });
-                    }
-                });
-                kdramaData = Array.from(kdramaMap.values());
-
-                // Process Anime
-                const animeMap = new Map();
-                aPages.flat().forEach(i => {
-                    if(i && i.mal_id) {
-                        animeMap.set(i.mal_id, {
-                            id: 'a_' + i.mal_id,
-                            realId: i.mal_id,
-                            title: i.title_english || i.title,
-                            type: 'tv',
-                            poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
-                            backdrop: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
-                            rating: i.score ? i.score.toFixed(1) : '8.0',
-                            year: i.year || '2026',
-                            overview: i.synopsis || 'Top trending anime series.',
-                            lang: 'Sub/Dub',
-                            category: 'anime'
-                        });
-                    }
-                });
-                animeData = Array.from(animeMap.values());
-
-                // Slider items mix
-                const topAnimeSlider = animeData.slice(0, 7).map(i => ({ ...i, badge: '⚡ Top Trending Anime' }));
-                const topMovieSlider = moviesData.slice(0, 7).map(i => ({ ...i, badge: '🎬 Trending Movie' }));
-                const topKdramaSlider = kdramaData.slice(0, 6).map(i => ({ ...i, badge: '🇰🇷 Trending K-Drama' }));
-
-                sliderItems = [...topAnimeSlider, ...topMovieSlider, ...topKdramaSlider].sort(() => Math.random() - 0.5);
+                sliderItems = [...animeData.slice(0, 5), ...moviesData.slice(0, 5), ...kdramaData.slice(0, 5)].sort(() => Math.random() - 0.5);
                 initSlider();
-
-                const mixedHome = [...animeData, ...moviesData, ...kdramaData].sort(() => Math.random() - 0.5);
-                renderGrid(mixedHome, 'contentGrid1');
-
-            } catch (e) {
-                console.log("Error fetching data", e);
-            }
+                renderGrid([...animeData, ...moviesData, ...kdramaData].sort(() => Math.random() - 0.5), 'contentGrid1');
+            } catch (e) { console.log(e); }
         }
 
         let currentSlide = 0;
         function initSlider() {
             const slider = document.getElementById('heroSlider');
             if(!slider || sliderItems.length === 0) return;
-
             slider.innerHTML = sliderItems.map((item, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" onclick="openPlayer('${item.realId}', '${item.type}', '${item.category}')">
-                    <img src="${item.backdrop || item.poster}" alt="${item.title}" onerror="this.src='https://placehold.co/1280x720/111827/ffffff?text=Movie+Plaza'">
+                    <img src="${item.backdrop || item.poster}" alt="${item.title}">
                     <div class="slide-content">
-                        <span class="slide-badge">${item.badge}</span>
+                        <span class="slide-badge">Featured</span>
                         <div class="slide-title">${item.title}</div>
                         <div class="slide-desc">${item.overview}</div>
-                        <button class="watch-btn">▶ Watch / Seasons Info</button>
+                        <button class="watch-btn">▶ Watch / Info</button>
                     </div>
                 </div>
             `).join('');
-
             setInterval(() => {
                 const slides = document.querySelectorAll('.slide');
                 if(slides.length === 0) return;
@@ -741,7 +415,6 @@
         }
 
         function openPlayer(realId, type, category) {
-            // Passing parameters to player page with support for seasons & episodes details
             window.location.href = `player.html?id=${realId}&type=${type}&category=${category}`;
         }
 
@@ -749,27 +422,20 @@
             const grid = document.getElementById(targetId);
             if (!grid) return;
             grid.innerHTML = '';
-
             if (!list || list.length === 0) {
-                grid.innerHTML = '<div class="loader">No content found. Please check connection or reload.</div>';
+                grid.innerHTML = '<div class="loader">No content found.</div>';
                 return;
             }
-
             list.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openPlayer(item.realId, item.type, item.category);
-                
-                const safeTitle = item.title ? item.title.replace(/'/g, "") : "Media";
                 card.innerHTML = `
                     <span class="lang-badge">${item.lang}</span>
-                    <img src="${item.poster}" alt="${safeTitle}" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/500x750/111827/ffffff?text=${encodeURIComponent(safeTitle)}'">
+                    <img src="${item.poster}" alt="${item.title}" loading="lazy" onerror="this.src='https://placehold.co/300x450/111827/ffffff?text=Media'">
                     <div class="card-content">
                         <div class="card-title">${item.title}</div>
-                        <div class="card-info">
-                            <span>⭐ ${item.rating}</span>
-                            <span>${item.year}</span>
-                        </div>
+                        <div class="card-info"><span>⭐ ${item.rating}</span><span>${item.year}</span></div>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -781,26 +447,23 @@
                 document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
             }
-
             const t1 = document.getElementById('mainTitle1');
             const slider = document.getElementById('heroSlider');
-
             if (category === 'home') {
                 slider.style.display = 'block';
                 t1.innerText = '🔥 Trending Feed & Popular Collections';
-                const mixedHome = [...animeData, ...moviesData, ...kdramaData].sort(() => Math.random() - 0.5);
-                renderGrid(mixedHome, 'contentGrid1');
+                renderGrid([...animeData, ...moviesData, ...kdramaData].sort(() => Math.random() - 0.5), 'contentGrid1');
             } else if (category === 'movies') {
                 slider.style.display = 'none';
-                t1.innerText = `🎬 Trending Movies (${moviesData.length}+ Available)`;
+                t1.innerText = `🎬 Trending Movies (${moviesData.length}+)`;
                 renderGrid(moviesData, 'contentGrid1');
             } else if (category === 'anime') {
                 slider.style.display = 'none';
-                t1.innerText = `⚡ Top Trending Anime (${animeData.length}+ Available)`;
+                t1.innerText = `⚡ Top Anime (${animeData.length}+)`;
                 renderGrid(animeData, 'contentGrid1');
             } else if (category === 'kdrama') {
                 slider.style.display = 'none';
-                t1.innerText = `🇰🇷 Trending K-Dramas & Series (${kdramaData.length}+ Available)`;
+                t1.innerText = `🇰🇷 K-Dramas (${kdramaData.length}+)`;
                 renderGrid(kdramaData, 'contentGrid1');
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -809,12 +472,9 @@
         function searchContent() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             if (!query) return;
-
-            const allCombined = [...moviesData, ...animeData, ...kdramaData];
-            const filtered = allCombined.filter(i => i.title.toLowerCase().includes(query));
-
+            const filtered = [...moviesData, ...animeData, ...kdramaData].filter(i => i.title.toLowerCase().includes(query));
             document.getElementById('heroSlider').style.display = 'none';
-            document.getElementById('mainTitle1').innerText = `🔍 Search Results for "${query}" (${filtered.length} found)`;
+            document.getElementById('mainTitle1').innerText = `🔍 Search "${query}" (${filtered.length})`;
             renderGrid(filtered, 'contentGrid1');
         }
 
