@@ -28,6 +28,18 @@
             z-index: 1000;
             border-bottom: 1px solid #1e293b;
         }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #38bdf8;
+            font-size: 22px;
+            cursor: pointer;
+        }
         .logo {
             font-size: 22px;
             font-weight: 800;
@@ -36,7 +48,7 @@
         }
         .search-bar input {
             padding: 8px 14px;
-            width: 220px;
+            width: 200px;
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 8px;
@@ -46,9 +58,75 @@
         }
         .search-bar input:focus {
             border-color: #38bdf8;
-            width: 250px;
+            width: 240px;
             transition: 0.3s;
         }
+
+        /* Sidebar / Drawer Menu */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: #0b1120;
+            border-right: 1px solid #1e293b;
+            z-index: 2000;
+            transition: 0.3s ease-in-out;
+            padding: 20px;
+        }
+        .sidebar.open {
+            left: 0;
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .sidebar-logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .sidebar-menu li:hover {
+            background: #1e293b;
+            color: #38bdf8;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1500;
+            display: none;
+        }
+        .overlay.active {
+            display: block;
+        }
+
         /* Category Bar */
         .categories {
             display: flex;
@@ -56,6 +134,10 @@
             padding: 15px 5%;
             background: #0b1120;
             border-bottom: 1px solid #1e293b;
+            overflow-x: auto;
+        }
+        .categories::-webkit-scrollbar {
+            display: none;
         }
         .cat-pill {
             background: #1e293b;
@@ -66,6 +148,7 @@
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
+            white-space: nowrap;
             transition: 0.3s;
         }
         .cat-pill.active, .cat-pill:hover {
@@ -228,8 +311,28 @@
 </head>
 <body>
 
+    <!-- Sidebar Menu -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🎬 Menu</div>
+            <button class="close-btn" onclick="toggleSidebar()">✕</button>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="switchCategory('home'); toggleSidebar();">🏠 Home</li>
+            <li onclick="switchCategory('movies'); toggleSidebar();">🎬 All Movies</li>
+            <li onclick="switchCategory('anime'); toggleSidebar();">⚡ All Anime Universe</li>
+            <li onclick="alert('Sign In feature coming soon!');">👤 Sign In / Sign Up</li>
+            <li onclick="alert('Favorites feature coming soon!');">⭐ My Favorites</li>
+            <li onclick="alert('Settings panel.');">⚙️ Settings</li>
+        </ul>
+    </div>
+
     <header>
-        <a href="index.html" class="logo">🎬 Movie Plaza</a>
+        <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <a href="index.html" class="logo">Movie Plaza</a>
+        </div>
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Search Movies / Anime..." onkeypress="if(event.key === 'Enter') searchContent()">
         </div>
@@ -239,7 +342,7 @@
     <div class="categories">
         <div class="cat-pill active" onclick="switchCategory('home', this)">🏠 Home</div>
         <div class="cat-pill" onclick="switchCategory('movies', this)">🎬 Movies Collection</div>
-        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ Anime Collection</div>
+        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ Anime Universe (Massive)</div>
     </div>
 
     <!-- Top Sliding Banner -->
@@ -249,10 +352,10 @@
 
     <!-- Content Section -->
     <div class="section-header">
-        <div class="section-title" id="mainTitle1">🔥 Trending & Popular Collection</div>
+        <div class="section-title" id="mainTitle1">🔥 Trending & Popular Infinite Collection</div>
     </div>
     <div class="grid" id="contentGrid1">
-        <div class="loader">Loading massive content, please wait...</div>
+        <div class="loader">Loading thousands of movies & anime worldwide, please wait...</div>
     </div>
 
     <script>
@@ -260,103 +363,102 @@
         let animeData = [];
         let sliderItems = [];
 
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
         async function fetchAllData() {
             try {
+                // Infinite Movies Fetching (Multiple TMDB Endpoints & Pages)
                 const moviePromises = [];
                 for(let p = 1; p <= 15; p++) {
                     moviePromises.push(
                         fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${p}`)
-                            .then(res => res.json())
-                            .then(d => d.results || []).catch(() => [])
+                            .then(res => res.json()).then(d => d.results || []).catch(() => []),
+                        fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=1a878c977c07619736ef416785671db8&page=${p}`)
+                            .then(res => res.json()).then(d => d.results || []).catch(() => [])
                     );
                 }
 
+                // Infinite Anime Fetching (Multiple Jikan Endpoints: Top, Seasonal, Upcoming, Popular)
                 const animePromises = [];
-                for(let p = 1; p <= 25; p++) {
+                for(let p = 1; p <= 15; p++) {
                     animePromises.push(
                         fetch(`https://api.jikan.moe/v4/top/anime?page=${p}`)
-                            .then(res => res.json())
-                            .then(d => d.data || []).catch(() => [])
+                            .then(res => res.json()).then(d => d.data || []).catch(() => []),
+                        fetch(`https://api.jikan.moe/v4/seasons/upcoming?page=${p}`)
+                            .then(res => res.json()).then(d => d.data || []).catch(() => []),
+                        fetch(`https://api.jikan.moe/v4/anime?order_by=score&sort=desc&page=${p}`)
+                            .then(res => res.json()).then(d => d.data || []).catch(() => [])
                     );
                 }
 
-                const upcomingAnimePromise = fetch(`https://api.jikan.moe/v4/seasons/upcoming`)
-                    .then(res => res.json())
-                    .then(d => d.data || []).catch(() => []);
-
-                const [mPages, aPages, upAnime] = await Promise.all([
+                const [mPages, aPages] = await Promise.all([
                     Promise.all(moviePromises),
-                    Promise.all(animePromises),
-                    upcomingAnimePromise
+                    Promise.all(animePromises)
                 ]);
 
-                moviesData = mPages.flat().map(i => ({
-                    id: 'm_' + i.id,
-                    title: i.title || i.name,
-                    type: 'movie',
-                    poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
-                    backdrop: i.backdrop_path ? `https://image.tmdb.org/t/p/w1280${i.backdrop_path}` : '',
-                    rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
-                    year: (i.release_date || '2026').substring(0, 4),
-                    overview: i.overview || 'Trending movie on Movie Plaza.',
-                    lang: 'Hindi/Eng',
-                    isAnime: false
+                // Remove duplicates using Map based on id
+                const movieMap = new Map();
+                mPages.flat().forEach(i => {
+                    if(i && i.id) {
+                        movieMap.set(i.id, {
+                            id: 'm_' + i.id,
+                            realId: i.id,
+                            title: i.title || i.name,
+                            type: 'movie',
+                            poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
+                            backdrop: i.backdrop_path ? `https://image.tmdb.org/t/p/w1280${i.backdrop_path}` : '',
+                            rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
+                            year: (i.release_date || '2026').substring(0, 4),
+                            overview: i.overview || 'Popular movie on Movie Plaza.',
+                            lang: 'Hindi/Eng',
+                            isAnime: false
+                        });
+                    }
+                });
+                moviesData = Array.from(movieMap.values());
+
+                const animeMap = new Map();
+                aPages.flat().forEach(i => {
+                    if(i && i.mal_id) {
+                        animeMap.set(i.mal_id, {
+                            id: 'a_' + i.mal_id,
+                            realId: i.mal_id,
+                            title: i.title_english || i.title,
+                            type: 'tv',
+                            poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
+                            backdrop: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
+                            rating: i.score ? i.score.toFixed(1) : '8.0',
+                            year: i.year || '2026',
+                            overview: i.synopsis || 'Top anime series.',
+                            lang: 'Sub/Dub',
+                            isAnime: true
+                        });
+                    }
+                });
+                animeData = Array.from(animeMap.values());
+
+                // Slider items setup
+                const topAnimeSlider = animeData.slice(0, 7).map(i => ({
+                    ...i,
+                    badge: '⚡ Top Anime Universe'
+                }));
+                const topMovieSlider = moviesData.slice(0, 7).map(i => ({
+                    ...i,
+                    badge: '🎬 Blockbuster Movie'
                 }));
 
-                animeData = aPages.flat().map(i => ({
-                    id: 'a_' + i.mal_id,
-                    title: i.title_english || i.title,
-                    type: 'tv',
-                    poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
-                    backdrop: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
-                    rating: i.score ? i.score.toFixed(1) : '8.0',
-                    year: i.year || '2026',
-                    overview: i.synopsis || 'Top trending anime series.',
-                    lang: 'Sub/Dub',
-                    isAnime: true
-                }));
-
-                const upcomingFormatted = upAnime.slice(0, 5).map(i => ({
-                    id: 'a_' + i.mal_id,
-                    title: i.title_english || i.title,
-                    poster: i.images?.jpg?.large_image_url || '',
-                    badge: '🔥 Upcoming Anime',
-                    overview: i.synopsis || 'Coming soon to Movie Plaza.',
-                    isAnime: true,
-                    realId: i.mal_id,
-                    type: 'tv'
-                }));
-
-                const topTrending = animeData.slice(0, 5).map(i => ({
-                    id: i.id,
-                    title: i.title,
-                    poster: i.backdrop,
-                    badge: '⚡ Top Trending Anime',
-                    overview: i.overview,
-                    isAnime: true,
-                    realId: i.id.replace('a_', ''),
-                    type: 'tv'
-                }));
-
-                const topMovies = moviesData.slice(0, 5).map(i => ({
-                    id: i.id,
-                    title: i.title,
-                    poster: i.backdrop,
-                    badge: '🎬 Popular Movie',
-                    overview: i.overview,
-                    isAnime: false,
-                    realId: i.id.replace('m_', ''),
-                    type: i.type
-                }));
-
-                sliderItems = [...upcomingFormatted, ...topTrending, ...topMovies];
+                sliderItems = [...topAnimeSlider, ...topMovieSlider];
                 initSlider();
 
-                const mixedHome = [...animeData.slice(0, 30), ...moviesData.slice(0, 30)];
+                // Initial Homepage mix
+                const mixedHome = [...animeData.slice(0, 40), ...moviesData.slice(0, 40)];
                 renderGrid(mixedHome, 'contentGrid1');
 
             } catch (e) {
-                console.log("Error fetching data", e);
+                console.log("Error fetching infinite data", e);
             }
         }
 
@@ -367,7 +469,7 @@
 
             slider.innerHTML = sliderItems.map((item, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" onclick="openPlayer('${item.realId}', '${item.type}', ${item.isAnime})">
-                    <img src="${item.poster}" alt="${item.title}" onerror="this.src='https://placehold.co/1280x720/1e293b/ffffff?text=Movie+Plaza'">
+                    <img src="${item.backdrop || item.poster}" alt="${item.title}" onerror="this.src='https://placehold.co/1280x720/1e293b/ffffff?text=Movie+Plaza'">
                     <div class="slide-content">
                         <span class="slide-badge">${item.badge}</span>
                         <div class="slide-title">${item.title}</div>
@@ -407,9 +509,8 @@
             list.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                const realId = item.id.replace(/^[ma]_/, '');
                 
-                card.onclick = () => openPlayer(realId, item.type, item.isAnime);
+                card.onclick = () => openPlayer(item.realId, item.type, item.isAnime);
                 
                 const safeTitle = item.title ? item.title.replace(/'/g, "") : "Media";
                 card.innerHTML = `
@@ -428,24 +529,26 @@
         }
 
         function switchCategory(category, btn) {
-            document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
+            if(btn) {
+                document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
 
             const t1 = document.getElementById('mainTitle1');
             const slider = document.getElementById('heroSlider');
 
             if (category === 'home') {
                 slider.style.display = 'block';
-                t1.innerText = '🔥 Trending & Popular Collection';
-                const mixedHome = [...animeData.slice(0, 30), ...moviesData.slice(0, 30)];
+                t1.innerText = '🔥 Trending & Popular Infinite Collection';
+                const mixedHome = [...animeData.slice(0, 40), ...moviesData.slice(0, 40)];
                 renderGrid(mixedHome, 'contentGrid1');
             } else if (category === 'movies') {
                 slider.style.display = 'none';
-                t1.innerText = '🎬 All Movies Collection (600+ Movies)';
+                t1.innerText = `🎬 All Movies Collection (${moviesData.length}+ Movies)`;
                 renderGrid(moviesData, 'contentGrid1');
             } else if (category === 'anime') {
                 slider.style.display = 'none';
-                t1.innerText = '⚡ All Anime Collection (1000+ Anime)';
+                t1.innerText = `⚡ Anime Universe Collection (${animeData.length}+ Anime)`;
                 renderGrid(animeData, 'contentGrid1');
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -459,7 +562,7 @@
             const filtered = allCombined.filter(i => i.title.toLowerCase().includes(query));
 
             document.getElementById('heroSlider').style.display = 'none';
-            document.getElementById('mainTitle1').innerText = `🔍 Search Results for "${query}"`;
+            document.getElementById('mainTitle1').innerText = `🔍 Search Results for "${query}" (${filtered.length} found)`;
             renderGrid(filtered, 'contentGrid1');
         }
 
