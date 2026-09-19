@@ -356,7 +356,6 @@
                 
                 let sOptions = '';
                 mediaDetails.seasons.forEach(s => {
-                    // Include all valid seasons including specials if episode count > 0
                     if(s.episode_count > 0) {
                         sOptions += `<option value="${s.season_number}" data-eps="${s.episode_count}">${s.name || ('Season ' + s.season_number)} (${s.episode_count} Eps)</option>`;
                     }
@@ -388,10 +387,10 @@
             const rating = mediaDetails.score ? mediaDetails.score.toFixed(1) : '8.0';
             const overview = mediaDetails.synopsis || 'No description available.';
             
+            // Clean episode count setup line by line as requested
             let episodesCount = mediaDetails.episodes || 25;
-            if(episodesCount > 1500) episodesCount = 1500; // Cap to avoid browser lag on huge lists
+            if(episodesCount > 1500) episodesCount = 1500;
 
-            // For anime, enable season select if relations exist, otherwise provide direct episode list
             document.getElementById('seasonGroup').style.display = 'none'; 
             document.getElementById('episodeGroup').style.display = 'flex';
 
@@ -516,10 +515,11 @@
                 }
             }
 
-            // Fixed Sandbox and Cross-origin iframe issue completely by adding standard allow attributes
+            // Strict sandbox iframe configuration to block external pop-ups and redirects while allowing video playback
             document.getElementById('videoWrapper').innerHTML = `
                 <iframe src="${embedUrl}" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    sandbox="allow-scripts allow-same-origin allow-forms"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen>
                 </iframe>`;
         }
