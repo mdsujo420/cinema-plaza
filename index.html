@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,25 +49,21 @@
             width: 250px;
             transition: 0.3s;
         }
+        /* Category Bar */
         .categories {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             padding: 15px 5%;
-            overflow-x: auto;
             background: #0b1120;
             border-bottom: 1px solid #1e293b;
-        }
-        .categories::-webkit-scrollbar {
-            display: none;
         }
         .cat-pill {
             background: #1e293b;
             border: 1px solid #334155;
             color: #cbd5e1;
-            padding: 6px 16px;
+            padding: 6px 18px;
             border-radius: 20px;
             cursor: pointer;
-            white-space: nowrap;
             font-size: 13px;
             font-weight: 600;
             transition: 0.3s;
@@ -77,11 +73,88 @@
             color: #0f172a;
             border-color: #38bdf8;
         }
+
+        /* Hero Slider Section */
+        .hero-slider {
+            position: relative;
+            width: 90%;
+            height: 350px;
+            margin: 25px auto;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            display: flex;
+            align-items: center;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5);
+        }
+        .slide-content {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            right: 30px;
+            z-index: 2;
+        }
+        .slide-badge {
+            background: #38bdf8;
+            color: #0f172a;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .slide-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .slide-desc {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .watch-btn {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 8px 18px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 25px 5% 15px;
+            margin: 30px 5% 15px;
         }
         .section-title {
             font-size: 18px;
@@ -162,38 +235,35 @@
         </div>
     </header>
 
-    <!-- প্রয়োজনীয় ক্যাটাগরি বার -->
+    <!-- Category Bar -->
     <div class="categories">
-        <div class="cat-pill active" onclick="switchCategory('all', this)">🏠 হোম (সব)</div>
-        <div class="cat-pill" onclick="switchCategory('movies', this)">🎬 সকল মুভিজ</div>
-        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ সকল অ্যানিমে</div>
-        <div class="cat-pill" onclick="switchCategory('onepiece', this)">🏴‍☠️ One Piece কালেকশন</div>
+        <div class="cat-pill active" onclick="switchCategory('home', this)">🏠 Home</div>
+        <div class="cat-pill" onclick="switchCategory('movies', this)">🎬 Movies Collection</div>
+        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ Anime Collection</div>
     </div>
 
+    <!-- Top Sliding Banner -->
+    <div class="hero-slider" id="heroSlider">
+        <div class="loader" style="padding-top: 150px;">Loading banner...</div>
+    </div>
+
+    <!-- Content Section -->
     <div class="section-header">
-        <div class="section-title" id="mainTitle1">🔥 বিশাল মুভি কালেকশন</div>
+        <div class="section-title" id="mainTitle1">🔥 Trending & Popular Collection</div>
     </div>
     <div class="grid" id="contentGrid1">
-        <div class="loader">হাজার হাজার কন্টেন্ট লোড হচ্ছে, একটু অপেক্ষা করুন...</div>
-    </div>
-
-    <div class="section-header" id="headerSection2">
-        <div class="section-title" id="mainTitle2">⚡ বিশাল অ্যানিমে কালেকশন</div>
-    </div>
-    <div class="grid" id="contentGrid2">
-        <div class="loader">লোড হচ্ছে...</div>
+        <div class="loader">Loading massive content, please wait...</div>
     </div>
 
     <script>
         let moviesData = [];
         let animeData = [];
-        let onePieceData = [];
+        let sliderItems = [];
 
-        async function fetchAllCategories() {
+        async function fetchAllData() {
             try {
-                // TMDB থেকে একযোগে অনেকগুলো পেজ (যেমন ১ থেকে ১০ পেজ) ফেচ করে শত শত মুভি আনা
                 const moviePromises = [];
-                for(let p = 1; p <= 10; p++) {
+                for(let p = 1; p <= 15; p++) {
                     moviePromises.push(
                         fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${p}`)
                             .then(res => res.json())
@@ -201,9 +271,8 @@
                     );
                 }
 
-                // Jikan API থেকে একযোগে ১০টি পেজ ফেচ করে শত শত অ্যানিমে আনা
                 const animePromises = [];
-                for(let p = 1; p <= 10; p++) {
+                for(let p = 1; p <= 25; p++) {
                     animePromises.push(
                         fetch(`https://api.jikan.moe/v4/top/anime?page=${p}`)
                             .then(res => res.json())
@@ -211,15 +280,14 @@
                     );
                 }
 
-                // ওয়ান পিস এর বিভিন্ন সিজন ও মুভি খোঁজার জন্য
-                const onePiecePromise = fetch(`https://api.jikan.moe/v4/anime?q=One+Piece&limit=50`)
+                const upcomingAnimePromise = fetch(`https://api.jikan.moe/v4/seasons/upcoming`)
                     .then(res => res.json())
                     .then(d => d.data || []).catch(() => []);
 
-                const [mPages, aPages, opList] = await Promise.all([
+                const [mPages, aPages, upAnime] = await Promise.all([
                     Promise.all(moviePromises),
                     Promise.all(animePromises),
-                    onePiecePromise
+                    upcomingAnimePromise
                 ]);
 
                 moviesData = mPages.flat().map(i => ({
@@ -227,8 +295,10 @@
                     title: i.title || i.name,
                     type: 'movie',
                     poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
+                    backdrop: i.backdrop_path ? `https://image.tmdb.org/t/p/w1280${i.backdrop_path}` : '',
                     rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
-                    year: (i.release_date || '2024').substring(0, 4),
+                    year: (i.release_date || '2026').substring(0, 4),
+                    overview: i.overview || 'Trending movie on Movie Plaza.',
                     lang: 'Hindi/Eng',
                     isAnime: false
                 }));
@@ -238,28 +308,89 @@
                     title: i.title_english || i.title,
                     type: 'tv',
                     poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
+                    backdrop: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
                     rating: i.score ? i.score.toFixed(1) : '8.0',
-                    year: i.year || '2024',
+                    year: i.year || '2026',
+                    overview: i.synopsis || 'Top trending anime series.',
                     lang: 'Sub/Dub',
                     isAnime: true
                 }));
 
-                onePieceData = opList.map(i => ({
+                const upcomingFormatted = upAnime.slice(0, 5).map(i => ({
                     id: 'a_' + i.mal_id,
                     title: i.title_english || i.title,
-                    type: 'tv',
-                    poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
-                    rating: i.score ? i.score.toFixed(1) : '8.5',
-                    year: i.year || '1999',
-                    lang: 'Sub/Dub',
-                    isAnime: true
+                    poster: i.images?.jpg?.large_image_url || '',
+                    badge: '🔥 Upcoming Anime',
+                    overview: i.synopsis || 'Coming soon to Movie Plaza.',
+                    isAnime: true,
+                    realId: i.mal_id,
+                    type: 'tv'
                 }));
 
-                renderGrid(moviesData, 'contentGrid1');
-                renderGrid(animeData, 'contentGrid2');
+                const topTrending = animeData.slice(0, 5).map(i => ({
+                    id: i.id,
+                    title: i.title,
+                    poster: i.backdrop,
+                    badge: '⚡ Top Trending Anime',
+                    overview: i.overview,
+                    isAnime: true,
+                    realId: i.id.replace('a_', ''),
+                    type: 'tv'
+                }));
+
+                const topMovies = moviesData.slice(0, 5).map(i => ({
+                    id: i.id,
+                    title: i.title,
+                    poster: i.backdrop,
+                    badge: '🎬 Popular Movie',
+                    overview: i.overview,
+                    isAnime: false,
+                    realId: i.id.replace('m_', ''),
+                    type: i.type
+                }));
+
+                sliderItems = [...upcomingFormatted, ...topTrending, ...topMovies];
+                initSlider();
+
+                const mixedHome = [...animeData.slice(0, 30), ...moviesData.slice(0, 30)];
+                renderGrid(mixedHome, 'contentGrid1');
 
             } catch (e) {
                 console.log("Error fetching data", e);
+            }
+        }
+
+        let currentSlide = 0;
+        function initSlider() {
+            const slider = document.getElementById('heroSlider');
+            if(!slider || sliderItems.length === 0) return;
+
+            slider.innerHTML = sliderItems.map((item, index) => `
+                <div class="slide ${index === 0 ? 'active' : ''}" onclick="openPlayer('${item.realId}', '${item.type}', ${item.isAnime})">
+                    <img src="${item.poster}" alt="${item.title}" onerror="this.src='https://placehold.co/1280x720/1e293b/ffffff?text=Movie+Plaza'">
+                    <div class="slide-content">
+                        <span class="slide-badge">${item.badge}</span>
+                        <div class="slide-title">${item.title}</div>
+                        <div class="slide-desc">${item.overview}</div>
+                        <button class="watch-btn">▶ Watch Now</button>
+                    </div>
+                </div>
+            `).join('');
+
+            setInterval(() => {
+                const slides = document.querySelectorAll('.slide');
+                if(slides.length === 0) return;
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 4000);
+        }
+
+        function openPlayer(realId, type, isAnime) {
+            if(isAnime) {
+                window.location.href = `player.html?id=${realId}&type=tv&isAnime=true`;
+            } else {
+                window.location.href = `player.html?id=${realId}&type=${type}&isAnime=false`;
             }
         }
 
@@ -269,7 +400,7 @@
             grid.innerHTML = '';
 
             if (!list || list.length === 0) {
-                grid.innerHTML = '<div class="loader">কোনো কন্টেন্ট পাওয়া যায়নি।</div>';
+                grid.innerHTML = '<div class="loader">No content found.</div>';
                 return;
             }
 
@@ -278,13 +409,7 @@
                 card.className = 'card';
                 const realId = item.id.replace(/^[ma]_/, '');
                 
-                card.onclick = () => {
-                    if(item.isAnime) {
-                        window.location.href = `player.html?id=${realId}&type=tv&isAnime=true`;
-                    } else {
-                        window.location.href = `player.html?id=${realId}&type=${item.type}&isAnime=false`;
-                    }
-                };
+                card.onclick = () => openPlayer(realId, item.type, item.isAnime);
                 
                 const safeTitle = item.title ? item.title.replace(/'/g, "") : "Media";
                 card.innerHTML = `
@@ -307,32 +432,21 @@
             if(btn) btn.classList.add('active');
 
             const t1 = document.getElementById('mainTitle1');
-            const g1 = document.getElementById('contentGrid1');
-            const t2 = document.getElementById('mainTitle2');
-            const g2 = document.getElementById('contentGrid2');
-            const h2 = document.getElementById('headerSection2');
+            const slider = document.getElementById('heroSlider');
 
-            if (category === 'all') {
-                t1.innerText = '🔥 বিশাল মুভি কালেকশন';
-                h2.style.display = 'flex';
-                g2.style.display = 'grid';
-                renderGrid(moviesData, 'contentGrid1');
-                renderGrid(animeData, 'contentGrid2');
+            if (category === 'home') {
+                slider.style.display = 'block';
+                t1.innerText = '🔥 Trending & Popular Collection';
+                const mixedHome = [...animeData.slice(0, 30), ...moviesData.slice(0, 30)];
+                renderGrid(mixedHome, 'contentGrid1');
             } else if (category === 'movies') {
-                t1.innerText = '🎬 সকল মুভি কালেকশন (হাজারো মুভি)';
-                h2.style.display = 'none';
-                g2.style.display = 'none';
+                slider.style.display = 'none';
+                t1.innerText = '🎬 All Movies Collection (600+ Movies)';
                 renderGrid(moviesData, 'contentGrid1');
             } else if (category === 'anime') {
-                t1.innerText = '⚡ সকল অ্যানিমে কালেকশন (হাজারো অ্যানিমে)';
-                h2.style.display = 'none';
-                g2.style.display = 'none';
+                slider.style.display = 'none';
+                t1.innerText = '⚡ All Anime Collection (1000+ Anime)';
                 renderGrid(animeData, 'contentGrid1');
-            } else if (category === 'onepiece') {
-                t1.innerText = '🏴‍☠️ One Piece স্পেশাল কালেকশন';
-                h2.style.display = 'none';
-                g2.style.display = 'none';
-                renderGrid(onePieceData, 'contentGrid1');
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -341,16 +455,15 @@
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             if (!query) return;
 
-            const allCombined = [...moviesData, ...animeData, ...onePieceData];
+            const allCombined = [...moviesData, ...animeData];
             const filtered = allCombined.filter(i => i.title.toLowerCase().includes(query));
 
-            document.getElementById('mainTitle1').innerText = `🔍 "${query}" এর সার্চ ফলাফল`;
-            document.getElementById('headerSection2').style.display = 'none';
-            document.getElementById('contentGrid2').style.display = 'none';
+            document.getElementById('heroSlider').style.display = 'none';
+            document.getElementById('mainTitle1').innerText = `🔍 Search Results for "${query}"`;
             renderGrid(filtered, 'contentGrid1');
         }
 
-        fetchAllCategories();
+        fetchAllData();
     </script>
 </body>
 </html>
