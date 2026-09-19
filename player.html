@@ -140,40 +140,6 @@
             height: 100%;
             border: none;
         }
-        
-        /* Anti-Redirect Click Protector Overlay */
-        .player-shield {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 20;
-            background: rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .player-shield:hover {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        .play-trigger-btn {
-            background: #38bdf8;
-            color: #070d1b;
-            font-weight: 800;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 14px;
-            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4);
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            pointer-events: none;
-        }
 
         /* Media Info */
         .media-info {
@@ -288,9 +254,9 @@
             <div class="control-group">
                 <label>Server:</label>
                 <select id="serverSelect" onchange="reloadPlayer()">
-                    <option value="vidsrc_to">⚡ Server 1 (HD)</option>
-                    <option value="vidsrc_me">🔥 Server 2 (Backup)</option>
-                    <option value="embed_su">💫 Server 3 (Alternative)</option>
+                    <option value="multiembed">⚡ Server 1 (MultiEmbed - Clean)</option>
+                    <option value="vidsrc_cc">🔥 Server 2 (VidSrc.cc)</option>
+                    <option value="embed_su">💫 Server 3 (Embed.su)</option>
                 </select>
             </div>
             
@@ -518,17 +484,11 @@
             const ep = document.getElementById('episodeSelect').value || 1;
             const season = document.getElementById('seasonSelect').value || 1;
 
-            let langParam = '';
-            if(lang === 'hindi') langParam = '&audio=hi';
-            if(lang === 'english') langParam = '&audio=en';
-
-            if(server === 'vidsrc_me') {
-                if(category === 'anime') {
-                    embedUrl = `https://vidsrc.me/embed/anime?anilist=${id}&ep=${ep}${langParam}`;
-                } else if(type === 'tv') {
-                    embedUrl = `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${ep}${langParam}`;
+            if(server === 'vidsrc_cc') {
+                if(category === 'anime' || type === 'tv') {
+                    embedUrl = `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${ep}`;
                 } else {
-                    embedUrl = `https://vidsrc.me/embed/movie?tmdb=${id}${langParam}`;
+                    embedUrl = `https://vidsrc.cc/v2/embed/movie/${id}`;
                 }
             } else if(server === 'embed_su') {
                 if(category === 'anime') {
@@ -539,31 +499,22 @@
                     embedUrl = `https://embed.su/embed/movie/${id}`;
                 }
             } else {
-                if(category === 'anime') {
-                    // Optimized vidsrc.to anime embed route
-                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}`;
-                } else if(type === 'tv') {
-                    embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${ep}`;
+                // MultiEmbed clean player source to prevent redirects and support anime/movies seamlessly
+                if(category === 'anime' || type === 'tv') {
+                    embedUrl = `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${ep}`;
                 } else {
-                    embedUrl = `https://vidsrc.to/embed/movie/${id}`;
+                    embedUrl = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
                 }
             }
 
-            // Bulletproof Anti-Redirect implementation with interactive shield
+            // Using strict sandbox parameters to completely block popups, scripts escaping, and redirects
             document.getElementById('videoWrapper').innerHTML = `
                 <iframe src="${embedUrl}" 
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-presentation"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen>
                 </iframe>
-                <div class="player-shield" id="playerShield" onclick="unlockPlayer(this)">
-                    <button class="play-trigger-btn">▶ Click to Play Video</button>
-                </div>
             `;
-        }
-
-        function unlockPlayer(element) {
-            // Instantly intercepts any hidden redirect trigger on first touch and unlocks the player
-            element.style.display = 'none';
         }
 
         fetchDetails();
