@@ -45,17 +45,16 @@
         <button onclick="filterContent('anime')">Anime</button>
     </div>
 
-    <div id="loader" class="loader">Loading latest content...</div>
+    <div id="loader" class="loader">Loading content...</div>
     <div id="content-grid" class="grid"></div>
 
-    <!-- Video Player Modal -->
+    <!-- Modal -->
     <div id="videoModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closePlayer()">&times;</span>
             <div class="server-switcher" id="serverButtons"></div>
             <div class="iframe-container">
-                <!-- Properly Configured Sandbox permissions to allow video while blocking popup tab redirects -->
-                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
+                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
             </div>
         </div>
     </div>
@@ -112,19 +111,11 @@
             const playerModal = document.getElementById('videoModal');
             const serverButtons = document.getElementById('serverButtons');
 
-            if(item.type === 'movie') {
-                serverButtons.innerHTML = `
-                    <button onclick="changeServer('movie_1')">Server 1 (VidSrc)</button>
-                    <button onclick="changeServer('movie_2')">Server 2 (VidSrc PRO)</button>
-                `;
-                changeServer('movie_1');
-            } else {
-                serverButtons.innerHTML = `
-                    <button onclick="changeServer('anime_1')">Anime Server 1</button>
-                    <button onclick="changeServer('anime_2')">Anime Server 2</button>
-                `;
-                changeServer('anime_1');
-            }
+            serverButtons.innerHTML = `
+                <button onclick="changeServer('server_1')">Server 1 (Fast)</button>
+                <button onclick="changeServer('server_2')">Server 2 (HD)</button>
+            `;
+            changeServer('server_1');
 
             playerModal.style.display = 'flex';
         }
@@ -132,17 +123,20 @@
         function changeServer(server) {
             const iframe = document.getElementById('videoPlayer');
             const id = currentItem.id;
-            const title = encodeURIComponent(currentItem.title);
 
-            if(server === 'movie_1') {
-                iframe.src = `https://vidsrc.xyz/embed/movie/${id}`;
-            } else if(server === 'movie_2') {
-                iframe.src = `https://vidsrc.pro/embed/movie/${id}`;
-            } else if(server === 'anime_1') {
-                // Working 2embed / 2ani player for Anime searching by title
-                iframe.src = `https://2embed.org/embed/anime/search?q=${title}`;
-            } else if(server === 'anime_2') {
-                iframe.src = `https://vidsrc.cc/v2/embed/anime/${id}`;
+            if(currentItem.type === 'movie') {
+                if(server === 'server_1') {
+                    iframe.src = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+                } else {
+                    iframe.src = `https://vidlink.pro/movie/${id}`;
+                }
+            } else {
+                // Anime handling
+                if(server === 'server_1') {
+                    iframe.src = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+                } else {
+                    iframe.src = `https://vidlink.pro/tv/${id}`;
+                }
             }
         }
 
