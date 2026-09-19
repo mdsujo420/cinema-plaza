@@ -21,86 +21,115 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 5%;
-            background: rgba(15, 23, 42, 0.9);
+            padding: 15px 5%;
+            background: rgba(15, 23, 42, 0.95);
             position: sticky;
             top: 0;
             z-index: 1000;
             border-bottom: 1px solid #1e293b;
         }
         .logo {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: #38bdf8;
             text-decoration: none;
         }
         .search-bar input {
-            padding: 10px 15px;
-            width: 250px;
+            padding: 8px 14px;
+            width: 220px;
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 8px;
             color: #fff;
             outline: none;
+            font-size: 13px;
         }
+        .search-bar input:focus {
+            border-color: #38bdf8;
+            width: 250px;
+            transition: 0.3s;
+        }
+        /* ক্যাটাগরি ফিল্টার বার */
         .categories {
             display: flex;
             gap: 10px;
-            padding: 20px 5%;
+            padding: 15px 5%;
             overflow-x: auto;
+            background: #0b1120;
+            border-bottom: 1px solid #1e293b;
+        }
+        .categories::-webkit-scrollbar {
+            display: none;
         }
         .cat-pill {
             background: #1e293b;
             border: 1px solid #334155;
             color: #cbd5e1;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 20px;
             cursor: pointer;
             white-space: nowrap;
+            font-size: 13px;
+            font-weight: 600;
             transition: 0.3s;
         }
         .cat-pill.active, .cat-pill:hover {
             background: #38bdf8;
             color: #0f172a;
             border-color: #38bdf8;
-            font-weight: 600;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 5% 15px;
         }
         .section-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            margin: 20px 5% 15px;
             color: #f8fafc;
+        }
+        .view-all {
+            color: #38bdf8;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .view-all:hover {
+            text-decoration: underline;
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-            padding: 0 5% 40px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            padding: 0 5% 30px;
         }
         .card {
             background: #1e293b;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             border: 1px solid #334155;
         }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(56, 189, 248, 0.2);
             border-color: #38bdf8;
         }
         .card img {
             width: 100%;
-            height: 240px;
+            height: 220px;
             object-fit: cover;
+            display: block;
         }
         .lang-badge {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             color: #38bdf8;
             font-size: 10px;
             font-weight: 700;
@@ -109,21 +138,28 @@
             border: 1px solid #38bdf8;
         }
         .card-content {
-            padding: 12px;
+            padding: 10px;
         }
         .card-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         .card-info {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
+        }
+        .loader {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 14px;
+            grid-column: 1 / -1;
         }
     </style>
 </head>
@@ -132,65 +168,77 @@
     <header>
         <a href="index.html" class="logo">🎬 Movie Plaza</a>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search Movies / Anime..." onkeypress="if(event.key === 'Enter') searchRedirect()">
+            <input type="text" id="searchInput" placeholder="Search Movies / Anime..." onkeypress="if(event.key === 'Enter') searchContent()">
         </div>
     </header>
 
+    <!-- ক্যাটাগরি পেজ সিলেক্টর বার -->
     <div class="categories">
-        <div class="cat-pill active" onclick="switchTab('all', this)">🔥 All Popular</div>
-        <div class="cat-pill" onclick="switchTab('anime', this)">⚡ Anime</div>
-        <div class="cat-pill" onclick="switchTab('movie', this)">🎬 Movies</div>
-        <div class="cat-pill" onclick="switchTab('trending', this)">✨ Trending</div>
+        <div class="cat-pill active" onclick="switchCategory('all', this)">🏠 হোম (সব)</div>
+        <div class="cat-pill" onclick="switchCategory('movies', this)">🎬 পপুলার মুভিজ</div>
+        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ টপ অ্যানিমে</div>
+        <div class="cat-pill" onclick="switchCategory('onepiece', this)">🏴‍☠️ ওয়ান পিস স্পেশাল</div>
+        <div class="cat-pill" onclick="switchCategory('action', this)">🔥 অ্যাকশন অ্যানিমে</div>
     </div>
 
-    <div class="section-title" id="gridTitle1">🔥 Popular Movies</div>
-    <div class="grid" id="contentGrid"></div>
+    <!-- সেকশন ১ -->
+    <div class="section-header">
+        <div class="section-title" id="mainTitle1">🔥 পপুলার মুভি কালেকশন</div>
+        <a class="view-all" onclick="switchCategory('movies', document.querySelectorAll('.cat-pill')[1])">সব দেখুন &rarr;</a>
+    </div>
+    <div class="grid" id="contentGrid1">
+        <div class="loader">লোড হচ্ছে...</div>
+    </div>
 
-    <div class="section-title" id="gridTitle2">⚡ Unlimited Anime Collection</div>
-    <div class="grid" id="contentGrid2"></div>
+    <!-- সেকশন ২ -->
+    <div class="section-header" id="headerSection2">
+        <div class="section-title" id="mainTitle2">⚡ আনলিমিটেড অ্যানিমে কালেকশন</div>
+        <a class="view-all" onclick="switchCategory('anime', document.querySelectorAll('.cat-pill')[2])">সব দেখুন &rarr;</a>
+    </div>
+    <div class="grid" id="contentGrid2">
+        <div class="loader">লোড হচ্ছে...</div>
+    </div>
 
     <script>
-        let allMovies = [];
-        let allAnime = [];
+        let moviesData = [];
+        let animeData = [];
+        let onePieceData = [];
+        let actionAnimeData = [];
 
-        async function fetchMultiSourceContent() {
+        async function fetchAllCategories() {
             try {
-                // ১. Jikan API থেকে একাধিক পেজ থেকে প্রচুর অ্যানিমে ডাটা আনা (কোনো এপিআই কি প্রয়োজন নেই)
-                const animePromises = [1, 2, 3].map(page => 
-                    fetch(`https://api.jikan.moe/v4/top/anime?page=${page}`)
+                // ১. TMDB মুভিজ ফেচ করা (একাধিক পেজ থেকে প্রচুর মুভি)
+                const moviePromises = [1, 2, 3].map(p => 
+                    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${p}`)
                         .then(res => res.json())
-                        .then(data => data.data || [])
-                        .catch(() => [])
+                        .then(d => d.results || []).catch(() => [])
                 );
 
-                // ২. TMDB থেকে মুভির ডাটা ফেচ করা
-                const moviePromises = [1, 2].map(page => 
-                    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${page}`)
+                // ২. Jikan অ্যানিমে ফেচ করা (টপ অ্যানিমে পেজ ১, ২, ৩)
+                const animePromises = [1, 2, 3].map(p => 
+                    fetch(`https://api.jikan.moe/v4/top/anime?page=${p}`)
                         .then(res => res.json())
-                        .then(data => data.results || [])
-                        .catch(() => [])
+                        .then(d => d.data || []).catch(() => [])
                 );
 
-                const [animePages, moviePages] = await Promise.all([
+                // ৩. স্পেশাল: ওয়ান পিস (One Piece) সার্চ করে আলাদা ক্যাটাগরি তৈরি
+                const onePiecePromise = fetch(`https://api.jikan.moe/v4/anime?q=One+Piece&limit=25`)
+                    .then(res => res.json())
+                    .then(d => d.data || []).catch(() => []);
+
+                // ৪. অ্যাকশন অ্যানিমে ক্যাটাগরি
+                const actionPromise = fetch(`https://api.jikan.moe/v4/anime?genres=1&limit=25`)
+                    .then(res => res.json())
+                    .then(d => d.data || []).catch(() => []);
+
+                const [mPages, aPages, opList, actList] = await Promise.all([
+                    Promise.all(moviePromises),
                     Promise.all(animePromises),
-                    Promise.all(moviePromises)
+                    onePiecePromise,
+                    actionPromise
                 ]);
 
-                const rawAnime = animePages.flat();
-                const rawMovies = moviePages.flat();
-
-                allAnime = rawAnime.map(i => ({
-                    id: 'a_' + i.mal_id,
-                    title: i.title_english || i.title,
-                    type: 'tv',
-                    poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
-                    rating: i.score ? i.score.toFixed(1) : '8.0',
-                    year: i.year || '2024',
-                    lang: 'Sub/Dub',
-                    isAnime: true
-                }));
-
-                allMovies = rawMovies.map(i => ({
+                moviesData = mPages.flat().map(i => ({
                     id: 'm_' + i.id,
                     title: i.title || i.name,
                     type: 'movie',
@@ -201,11 +249,45 @@
                     isAnime: false
                 }));
 
-                renderGrid(allMovies, 'contentGrid');
-                renderGrid(allAnime, 'contentGrid2');
+                animeData = aPages.flat().map(i => ({
+                    id: 'a_' + i.mal_id,
+                    title: i.title_english || i.title,
+                    type: 'tv',
+                    poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
+                    rating: i.score ? i.score.toFixed(1) : '8.0',
+                    year: i.year || '2024',
+                    lang: 'Sub/Dub',
+                    isAnime: true
+                }));
 
-            } catch (err) {
-                console.log("Error loading content securely", err);
+                onePieceData = opList.map(i => ({
+                    id: 'a_' + i.mal_id,
+                    title: i.title_english || i.title,
+                    type: 'tv',
+                    poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
+                    rating: i.score ? i.score.toFixed(1) : '8.5',
+                    year: i.year || '1999',
+                    lang: 'Sub/Dub',
+                    isAnime: true
+                }));
+
+                actionAnimeData = actList.map(i => ({
+                    id: 'a_' + i.mal_id,
+                    title: i.title_english || i.title,
+                    type: 'tv',
+                    poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
+                    rating: i.score ? i.score.toFixed(1) : '8.2',
+                    year: i.year || '2024',
+                    lang: 'Sub/Dub',
+                    isAnime: true
+                }));
+
+                // হোমপেজে বাই ডিফল্ট সব দেখাবে
+                renderGrid(moviesData, 'contentGrid1');
+                renderGrid(animeData, 'contentGrid2');
+
+            } catch (e) {
+                console.log("Error fetching data", e);
             }
         }
 
@@ -215,7 +297,7 @@
             grid.innerHTML = '';
 
             if (!list || list.length === 0) {
-                grid.innerHTML = '<p style="color:#94a3b8; grid-column: 1/-1;">No content found.</p>';
+                grid.innerHTML = '<div class="loader">কোনো কন্টেন্ট পাওয়া যায়নি।</div>';
                 return;
             }
 
@@ -224,11 +306,13 @@
                 card.className = 'card';
                 const realId = item.id.replace(/^[ma]_/, '');
                 
-                if(item.isAnime) {
-                    card.onclick = () => window.location.href = `player.html?id=${realId}&type=tv&isAnime=true`;
-                } else {
-                    card.onclick = () => window.location.href = `player.html?id=${realId}&type=${item.type}&isAnime=false`;
-                }
+                card.onclick = () => {
+                    if(item.isAnime) {
+                        window.location.href = `player.html?id=${realId}&type=tv&isAnime=true`;
+                    } else {
+                        window.location.href = `player.html?id=${realId}&type=${item.type}&isAnime=false`;
+                    }
+                };
                 
                 const safeTitle = item.title ? item.title.replace(/'/g, "") : "Media";
                 card.innerHTML = `
@@ -246,53 +330,61 @@
             });
         }
 
-        function switchTab(cat, btn) {
+        // ক্যাটাগরি বা পেজ সুইচ করার ফাংশন
+        function switchCategory(category, btn) {
             document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if(btn) btn.classList.add('active');
 
-            const t1 = document.getElementById('gridTitle1');
-            const t2 = document.getElementById('gridTitle2');
+            const t1 = document.getElementById('mainTitle1');
+            const g1 = document.getElementById('contentGrid1');
+            const t2 = document.getElementById('mainTitle2');
             const g2 = document.getElementById('contentGrid2');
+            const h2 = document.getElementById('headerSection2');
 
-            if (cat === 'all') {
-                t1.innerText = '🔥 Popular Movies';
-                t2.innerText = '⚡ Unlimited Anime Collection';
-                t2.style.display = 'flex';
+            if (category === 'all') {
+                t1.innerText = '🔥 পপুলার মুভি কালেকশন';
+                h2.style.display = 'flex';
                 g2.style.display = 'grid';
-                renderGrid(allMovies, 'contentGrid');
-                renderGrid(allAnime, 'contentGrid2');
-            } else if (cat === 'anime') {
-                t1.innerText = '⚡ All Anime Collection';
-                t2.style.display = 'none';
+                renderGrid(moviesData, 'contentGrid1');
+                renderGrid(animeData, 'contentGrid2');
+            } else if (category === 'movies') {
+                t1.innerText = '🎬 সকল পপুলার মুভিজ';
+                h2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid(allAnime, 'contentGrid');
-            } else if (cat === 'movie') {
-                t1.innerText = '🎬 All Movies Collection';
-                t2.style.display = 'none';
+                renderGrid(moviesData, 'contentGrid1');
+            } else if (category === 'anime') {
+                t1.innerText = '⚡ সকল টপ অ্যানিমে কালেকশন';
+                h2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid(allMovies, 'contentGrid');
-            } else if (cat === 'trending') {
-                t1.innerText = '🔥 Trending Content';
-                t2.style.display = 'none';
+                renderGrid(animeData, 'contentGrid1');
+            } else if (category === 'onepiece') {
+                t1.innerText = '🏴‍☠️ ওয়ান পিস (One Piece) স্পেশাল কালেকশন';
+                h2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid([...allMovies, ...allAnime], 'contentGrid');
+                renderGrid(onePieceData, 'contentGrid1');
+            } else if (category === 'action') {
+                t1.innerText = '🔥 সেরা অ্যাকশন অ্যানিমে ক্যাটাগরি';
+                h2.style.display = 'none';
+                g2.style.display = 'none';
+                renderGrid(actionAnimeData, 'contentGrid1');
             }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function searchRedirect() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+        function searchContent() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
             if (!query) return;
-            
-            const filteredMovies = allMovies.filter(m => m.title.toLowerCase().includes(query));
-            const filteredAnime = allAnime.filter(a => a.title.toLowerCase().includes(query));
 
-            document.getElementById('gridTitle1').innerText = `Search Results for "${query}"`;
-            document.getElementById('gridTitle2').style.display = 'none';
+            const allCombined = [...moviesData, ...animeData, ...onePieceData, ...actionAnimeData];
+            const filtered = allCombined.filter(i => i.title.toLowerCase().includes(query));
+
+            document.getElementById('mainTitle1').innerText = `🔍 "${query}" এর সার্চ ফলাফল`;
+            document.getElementById('headerSection2').style.display = 'none';
             document.getElementById('contentGrid2').style.display = 'none';
-            renderGrid([...filteredMovies, ...filteredAnime], 'contentGrid');
+            renderGrid(filtered, 'contentGrid1');
         }
 
-        fetchMultiSourceContent();
+        fetchAllCategories();
     </script>
 </body>
 </html>
