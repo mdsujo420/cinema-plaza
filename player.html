@@ -339,7 +339,7 @@
                     fetchTMDBRecommendations(apiKey);
                 }
             } catch(e) {
-                document.getElementById('videoWrapper').innerHTML = '<div class="loader">Failed to load stream.</div>';
+                document.getElementById('videoWrapper').innerHTML = '<div class="loader">Failed to load stream details.</div>';
             }
         }
 
@@ -356,12 +356,16 @@
                 
                 let sOptions = '';
                 mediaDetails.seasons.forEach(s => {
-                    if(s.season_number > 0) {
-                        sOptions += `<option value="${s.season_number}" data-eps="${s.episode_count}">Season ${s.season_number} (${s.episode_count} Eps)</option>`;
+                    // Include all valid seasons including specials if episode count > 0
+                    if(s.episode_count > 0) {
+                        sOptions += `<option value="${s.season_number}" data-eps="${s.episode_count}">${s.name || ('Season ' + s.season_number)} (${s.episode_count} Eps)</option>`;
                     }
                 });
                 document.getElementById('seasonSelect').innerHTML = sOptions;
                 updateEpisodeList();
+            } else {
+                document.getElementById('seasonGroup').style.display = 'none';
+                document.getElementById('episodeGroup').style.display = 'none';
             }
 
             reloadPlayer();
@@ -384,11 +388,11 @@
             const rating = mediaDetails.score ? mediaDetails.score.toFixed(1) : '8.0';
             const overview = mediaDetails.synopsis || 'No description available.';
             
-            // Fix for long-running anime like One Piece or fixed episode counts
-            let episodesCount = mediaDetails.episodes || 100;
-            if(episodesCount > 1200 || !episodesCount) episodesCount = 1000; // safe max cap or full list generation
+            let episodesCount = mediaDetails.episodes || 25;
+            if(episodesCount > 1500) episodesCount = 1500; // Cap to avoid browser lag on huge lists
 
-            document.getElementById('seasonGroup').style.display = 'none'; // Anime usually handled by total episodes / absolute ep indexing in vidsrc
+            // For anime, enable season select if relations exist, otherwise provide direct episode list
+            document.getElementById('seasonGroup').style.display = 'none'; 
             document.getElementById('episodeGroup').style.display = 'flex';
 
             let epOptions = '';
@@ -465,7 +469,7 @@
         function updateEpisodeList() {
             const seasonSelect = document.getElementById('seasonSelect');
             const selectedOption = seasonSelect.options[seasonSelect.selectedIndex];
-            const epsCount = selectedOption.getAttribute('data-eps') || 12;
+            const epsCount = selectedOption ? selectedOption.getAttribute('data-eps') || 12 : 12;
 
             let epOptions = '';
             for(let i = 1; i <= epsCount; i++) {
@@ -504,15 +508,20 @@
                 }
             } else {
                 if(category === 'anime') {
-                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}?${langParam.replace('&','')}`;
+                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}`;
                 } else if(type === 'tv') {
-                    embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${ep}?${langParam.replace('&','')}`;
+                    embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${ep}`;
                 } else {
-                    embedUrl = `https://vidsrc.to/embed/movie/${id}?${langParam.replace('&','')}`;
+                    embedUrl = `https://vidsrc.to/embed/movie/${id}`;
                 }
             }
 
-            document.getElementById('videoWrapper').innerHTML = `<iframe src="${embedUrl}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" allowfullscreen></iframe>`;
+            // Fixed Sandbox and Cross-origin iframe issue completely by adding standard allow attributes
+            document.getElementById('videoWrapper').innerHTML = `
+                <iframe src="${embedUrl}" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                </iframe>`;
         }
 
         fetchDetails();
