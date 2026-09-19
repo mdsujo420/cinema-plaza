@@ -49,7 +49,6 @@
             width: 250px;
             transition: 0.3s;
         }
-        /* ক্যাটাগরি ফিল্টার বার */
         .categories {
             display: flex;
             gap: 10px;
@@ -65,7 +64,7 @@
             background: #1e293b;
             border: 1px solid #334155;
             color: #cbd5e1;
-            padding: 6px 14px;
+            padding: 6px 16px;
             border-radius: 20px;
             cursor: pointer;
             white-space: nowrap;
@@ -88,16 +87,6 @@
             font-size: 18px;
             font-weight: 700;
             color: #f8fafc;
-        }
-        .view-all {
-            color: #38bdf8;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .view-all:hover {
-            text-decoration: underline;
         }
         .grid {
             display: grid;
@@ -157,8 +146,9 @@
         .loader {
             text-align: center;
             padding: 40px;
-            color: #94a3b8;
-            font-size: 14px;
+            color: #38bdf8;
+            font-size: 15px;
+            font-weight: 600;
             grid-column: 1 / -1;
         }
     </style>
@@ -172,28 +162,23 @@
         </div>
     </header>
 
-    <!-- ক্যাটাগরি পেজ সিলেক্টর বার -->
+    <!-- প্রয়োজনীয় ক্যাটাগরি বার -->
     <div class="categories">
         <div class="cat-pill active" onclick="switchCategory('all', this)">🏠 হোম (সব)</div>
-        <div class="cat-pill" onclick="switchCategory('movies', this)">🎬 পপুলার মুভিজ</div>
-        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ টপ অ্যানিমে</div>
-        <div class="cat-pill" onclick="switchCategory('onepiece', this)">🏴‍☠️ ওয়ান পিস স্পেশাল</div>
-        <div class="cat-pill" onclick="switchCategory('action', this)">🔥 অ্যাকশন অ্যানিমে</div>
+        <div class="cat-pill" onclick="switchCategory('movies', this)">🎬 সকল মুভিজ</div>
+        <div class="cat-pill" onclick="switchCategory('anime', this)">⚡ সকল অ্যানিমে</div>
+        <div class="cat-pill" onclick="switchCategory('onepiece', this)">🏴‍☠️ One Piece কালেকশন</div>
     </div>
 
-    <!-- সেকশন ১ -->
     <div class="section-header">
-        <div class="section-title" id="mainTitle1">🔥 পপুলার মুভি কালেকশন</div>
-        <a class="view-all" onclick="switchCategory('movies', document.querySelectorAll('.cat-pill')[1])">সব দেখুন &rarr;</a>
+        <div class="section-title" id="mainTitle1">🔥 বিশাল মুভি কালেকশন</div>
     </div>
     <div class="grid" id="contentGrid1">
-        <div class="loader">লোড হচ্ছে...</div>
+        <div class="loader">হাজার হাজার কন্টেন্ট লোড হচ্ছে, একটু অপেক্ষা করুন...</div>
     </div>
 
-    <!-- সেকশন ২ -->
     <div class="section-header" id="headerSection2">
-        <div class="section-title" id="mainTitle2">⚡ আনলিমিটেড অ্যানিমে কালেকশন</div>
-        <a class="view-all" onclick="switchCategory('anime', document.querySelectorAll('.cat-pill')[2])">সব দেখুন &rarr;</a>
+        <div class="section-title" id="mainTitle2">⚡ বিশাল অ্যানিমে কালেকশন</div>
     </div>
     <div class="grid" id="contentGrid2">
         <div class="loader">লোড হচ্ছে...</div>
@@ -203,39 +188,38 @@
         let moviesData = [];
         let animeData = [];
         let onePieceData = [];
-        let actionAnimeData = [];
 
         async function fetchAllCategories() {
             try {
-                // ১. TMDB মুভিজ ফেচ করা (একাধিক পেজ থেকে প্রচুর মুভি)
-                const moviePromises = [1, 2, 3].map(p => 
-                    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${p}`)
-                        .then(res => res.json())
-                        .then(d => d.results || []).catch(() => [])
-                );
+                // TMDB থেকে একযোগে অনেকগুলো পেজ (যেমন ১ থেকে ১০ পেজ) ফেচ করে শত শত মুভি আনা
+                const moviePromises = [];
+                for(let p = 1; p <= 10; p++) {
+                    moviePromises.push(
+                        fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${p}`)
+                            .then(res => res.json())
+                            .then(d => d.results || []).catch(() => [])
+                    );
+                }
 
-                // ২. Jikan অ্যানিমে ফেচ করা (টপ অ্যানিমে পেজ ১, ২, ৩)
-                const animePromises = [1, 2, 3].map(p => 
-                    fetch(`https://api.jikan.moe/v4/top/anime?page=${p}`)
-                        .then(res => res.json())
-                        .then(d => d.data || []).catch(() => [])
-                );
+                // Jikan API থেকে একযোগে ১০টি পেজ ফেচ করে শত শত অ্যানিমে আনা
+                const animePromises = [];
+                for(let p = 1; p <= 10; p++) {
+                    animePromises.push(
+                        fetch(`https://api.jikan.moe/v4/top/anime?page=${p}`)
+                            .then(res => res.json())
+                            .then(d => d.data || []).catch(() => [])
+                    );
+                }
 
-                // ৩. স্পেশাল: ওয়ান পিস (One Piece) সার্চ করে আলাদা ক্যাটাগরি তৈরি
-                const onePiecePromise = fetch(`https://api.jikan.moe/v4/anime?q=One+Piece&limit=25`)
+                // ওয়ান পিস এর বিভিন্ন সিজন ও মুভি খোঁজার জন্য
+                const onePiecePromise = fetch(`https://api.jikan.moe/v4/anime?q=One+Piece&limit=50`)
                     .then(res => res.json())
                     .then(d => d.data || []).catch(() => []);
 
-                // ৪. অ্যাকশন অ্যানিমে ক্যাটাগরি
-                const actionPromise = fetch(`https://api.jikan.moe/v4/anime?genres=1&limit=25`)
-                    .then(res => res.json())
-                    .then(d => d.data || []).catch(() => []);
-
-                const [mPages, aPages, opList, actList] = await Promise.all([
+                const [mPages, aPages, opList] = await Promise.all([
                     Promise.all(moviePromises),
                     Promise.all(animePromises),
-                    onePiecePromise,
-                    actionPromise
+                    onePiecePromise
                 ]);
 
                 moviesData = mPages.flat().map(i => ({
@@ -271,18 +255,6 @@
                     isAnime: true
                 }));
 
-                actionAnimeData = actList.map(i => ({
-                    id: 'a_' + i.mal_id,
-                    title: i.title_english || i.title,
-                    type: 'tv',
-                    poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
-                    rating: i.score ? i.score.toFixed(1) : '8.2',
-                    year: i.year || '2024',
-                    lang: 'Sub/Dub',
-                    isAnime: true
-                }));
-
-                // হোমপেজে বাই ডিফল্ট সব দেখাবে
                 renderGrid(moviesData, 'contentGrid1');
                 renderGrid(animeData, 'contentGrid2');
 
@@ -330,7 +302,6 @@
             });
         }
 
-        // ক্যাটাগরি বা পেজ সুইচ করার ফাংশন
         function switchCategory(category, btn) {
             document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
@@ -342,31 +313,26 @@
             const h2 = document.getElementById('headerSection2');
 
             if (category === 'all') {
-                t1.innerText = '🔥 পপুলার মুভি কালেকশন';
+                t1.innerText = '🔥 বিশাল মুভি কালেকশন';
                 h2.style.display = 'flex';
                 g2.style.display = 'grid';
                 renderGrid(moviesData, 'contentGrid1');
                 renderGrid(animeData, 'contentGrid2');
             } else if (category === 'movies') {
-                t1.innerText = '🎬 সকল পপুলার মুভিজ';
+                t1.innerText = '🎬 সকল মুভি কালেকশন (হাজারো মুভি)';
                 h2.style.display = 'none';
                 g2.style.display = 'none';
                 renderGrid(moviesData, 'contentGrid1');
             } else if (category === 'anime') {
-                t1.innerText = '⚡ সকল টপ অ্যানিমে কালেকশন';
+                t1.innerText = '⚡ সকল অ্যানিমে কালেকশন (হাজারো অ্যানিমে)';
                 h2.style.display = 'none';
                 g2.style.display = 'none';
                 renderGrid(animeData, 'contentGrid1');
             } else if (category === 'onepiece') {
-                t1.innerText = '🏴‍☠️ ওয়ান পিস (One Piece) স্পেশাল কালেকশন';
+                t1.innerText = '🏴‍☠️ One Piece স্পেশাল কালেকশন';
                 h2.style.display = 'none';
                 g2.style.display = 'none';
                 renderGrid(onePieceData, 'contentGrid1');
-            } else if (category === 'action') {
-                t1.innerText = '🔥 সেরা অ্যাকশন অ্যানিমে ক্যাটাগরি';
-                h2.style.display = 'none';
-                g2.style.display = 'none';
-                renderGrid(actionAnimeData, 'contentGrid1');
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -375,7 +341,7 @@
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             if (!query) return;
 
-            const allCombined = [...moviesData, ...animeData, ...onePieceData, ...actionAnimeData];
+            const allCombined = [...moviesData, ...animeData, ...onePieceData];
             const filtered = allCombined.filter(i => i.title.toLowerCase().includes(query));
 
             document.getElementById('mainTitle1').innerText = `🔍 "${query}" এর সার্চ ফলাফল`;
