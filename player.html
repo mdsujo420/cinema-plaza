@@ -51,6 +51,10 @@
             text-decoration: none;
             letter-spacing: 0.3px;
         }
+        .search-bar {
+            display: flex;
+            gap: 5px;
+        }
         .search-bar input {
             padding: 6px 10px;
             width: 130px;
@@ -60,6 +64,16 @@
             color: #fff;
             outline: none;
             font-size: 11px;
+        }
+        .search-bar button {
+            background: #38bdf8;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #070d1b;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
         }
         @media (min-width: 768px) {
             header { padding: 15px 5%; }
@@ -229,7 +243,8 @@
             <a href="index.html" class="logo">✨ Movie Plaza</a>
         </div>
         <div class="search-bar">
-            <input type="text" placeholder="Search..." disabled>
+            <input type="text" id="searchInput" placeholder="Search..." onkeypress="if(event.key === 'Enter') handleSearch()">
+            <button onclick="handleSearch()">🔍</button>
         </div>
     </header>
 
@@ -296,6 +311,13 @@
 
         let mediaDetails = null;
 
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if(query) {
+                window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+            }
+        }
+
         async function fetchDetails() {
             if(!id) {
                 document.getElementById('videoWrapper').innerHTML = '<div class="loader">Media not found!</div>';
@@ -361,15 +383,13 @@
             const year = mediaDetails.year || '2026';
             const rating = mediaDetails.score ? mediaDetails.score.toFixed(1) : '8.0';
             const overview = mediaDetails.synopsis || 'No description available.';
-            const episodesCount = mediaDetails.episodes || 12;
+            
+            // Fix for long-running anime like One Piece or fixed episode counts
+            let episodesCount = mediaDetails.episodes || 100;
+            if(episodesCount > 1200 || !episodesCount) episodesCount = 1000; // safe max cap or full list generation
 
-            // Enable Season and Episode selectors for Anime as well
-            document.getElementById('seasonGroup').style.display = 'flex';
+            document.getElementById('seasonGroup').style.display = 'none'; // Anime usually handled by total episodes / absolute ep indexing in vidsrc
             document.getElementById('episodeGroup').style.display = 'flex';
-
-            // For anime, mock/default seasons or single season with total episodes
-            let sOptions = `<option value="1" data-eps="${episodesCount}">Season 1 (${episodesCount} Eps)</option>`;
-            document.getElementById('seasonSelect').innerHTML = sOptions;
 
             let epOptions = '';
             for(let i = 1; i <= episodesCount; i++) {
@@ -384,7 +404,7 @@
                 <div class="media-meta">
                     <span>⭐ ${rating}</span>
                     <span>📅 ${year}</span>
-                    <span>⚡ ANIME (${episodesCount} Episodes)</span>
+                    <span>⚡ ANIME (${mediaDetails.episodes || 'Ongoing'} Episodes)</span>
                 </div>
                 <div class="media-desc">${overview}</div>
             `;
@@ -492,7 +512,6 @@
                 }
             }
 
-            // Correct sandbox configuration to allow streaming playback and block annoying popups/redirects
             document.getElementById('videoWrapper').innerHTML = `<iframe src="${embedUrl}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" allowfullscreen></iframe>`;
         }
 
