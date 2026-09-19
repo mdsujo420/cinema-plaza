@@ -5,104 +5,207 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Plaza - Unlimited Movies & Anime</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(15, 23, 42, 0.9);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #1e293b;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        .search-bar input {
+            padding: 10px 15px;
+            width: 250px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+        }
+        .categories {
+            display: flex;
+            gap: 10px;
+            padding: 20px 5%;
+            overflow-x: auto;
+        }
+        .cat-pill {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+        .cat-pill.active, .cat-pill:hover {
+            background: #38bdf8;
+            color: #0f172a;
+            border-color: #38bdf8;
+            font-weight: 600;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 20px 5% 15px;
+            color: #f8fafc;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            padding: 0 5% 40px;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            border: 1px solid #334155;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+        }
+        .card img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+        }
+        .lang-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(15, 23, 42, 0.8);
+            color: #38bdf8;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 1px solid #38bdf8;
+        }
+        .card-content {
+            padding: 12px;
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 5px;
+        }
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+    </style>
 </head>
 <body>
 
     <header>
         <a href="index.html" class="logo">🎬 Movie Plaza</a>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search Movies / Anime..." onkeyup="searchContent()">
+            <input type="text" id="searchInput" placeholder="Search Movies / Anime..." onkeypress="if(event.key === 'Enter') searchRedirect()">
         </div>
     </header>
 
-    <div class="categories-bar">
-        <div class="cat-pill active" onclick="switchTab('all', this)">🏠 All Content</div>
-        <div class="cat-pill" onclick="switchTab('movie', this)">🎬 Movies</div>
+    <div class="categories">
+        <div class="cat-pill active" onclick="switchTab('all', this)">🔥 All Popular</div>
         <div class="cat-pill" onclick="switchTab('anime', this)">⚡ Anime</div>
-        <div class="cat-pill" onclick="switchTab('trending', this)">🔥 Trending</div>
+        <div class="cat-pill" onclick="switchTab('movie', this)">🎬 Movies</div>
+        <div class="cat-pill" onclick="switchTab('trending', this)">✨ Trending</div>
     </div>
 
-    <div class="main-container">
-        <div id="homeTopAd"></div>
+    <div class="section-title" id="gridTitle1">🔥 Popular Movies</div>
+    <div class="grid" id="contentGrid"></div>
 
-        <div class="section-title" id="gridTitle1">🔥 Popular Movies</div>
-        <div id="contentGrid" class="grid">Loading movies...</div>
-
-        <div id="homeMiddleAd"></div>
-
-        <div class="section-title" id="gridTitle2">⚡ Unlimited Anime Collection</div>
-        <div id="contentGrid2" class="grid">Loading anime...</div>
-    </div>
+    <div class="section-title" id="gridTitle2">⚡ Unlimited Anime Collection</div>
+    <div class="grid" id="contentGrid2"></div>
 
     <script>
-        const TMDB_API_KEYS = [
-            '1a878c977c07619736ef416785671db8',
-            '9e303205ce05a268cb89dfaa06b3f1f0',
-            'aab07fec041a520555467df59e5a4f64'
-        ];
-
-        function getActiveKey() {
-            return TMDB_API_KEYS[Math.floor(Math.random() * TMDB_API_KEYS.length)];
-        }
-
         let allMovies = [];
         let allAnime = [];
 
-        function getSafeImage(url) {
-            if (!url) return 'https://placehold.co/500x750/1e293b/ffffff?text=No+Poster';
-            return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
-        }
-
         async function fetchMultiSourceContent() {
             try {
-                const apiKey = getActiveKey();
+                // ১. Jikan API থেকে একাধিক পেজ থেকে প্রচুর অ্যানিমে ডাটা আনা (কোনো এপিআই কি প্রয়োজন নেই)
+                const animePromises = [1, 2, 3].map(page => 
+                    fetch(`https://api.jikan.moe/v4/top/anime?page=${page}`)
+                        .then(res => res.json())
+                        .then(data => data.data || [])
+                        .catch(() => [])
+                );
 
-                const fetchMovies = fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&page=1`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.results) {
-                            return data.results.map(i => ({
-                                id: 'm_' + i.id,
-                                title: i.title || i.name,
-                                type: 'movie',
-                                poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
-                                rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
-                                year: (i.release_date || '2024').substring(0, 4),
-                                lang: 'Hindi/Eng'
-                            }));
-                        }
-                        return [];
-                    }).catch(() => []);
+                // ২. TMDB থেকে মুভির ডাটা ফেচ করা
+                const moviePromises = [1, 2].map(page => 
+                    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=1a878c977c07619736ef416785671db8&page=${page}`)
+                        .then(res => res.json())
+                        .then(data => data.results || [])
+                        .catch(() => [])
+                );
 
-                const fetchAnime = fetch(`https://api.jikan.moe/v4/top/anime?limit=25`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.data) {
-                            return data.data.map(i => ({
-                                id: 'a_' + i.mal_id,
-                                title: i.title_english || i.title,
-                                type: 'tv',
-                                poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
-                                rating: i.score ? i.score.toFixed(1) : '8.0',
-                                year: i.year || '2023',
-                                lang: 'Sub/Dub',
-                                isAnime: true
-                            }));
-                        }
-                        return [];
-                    }).catch(() => []);
+                const [animePages, moviePages] = await Promise.all([
+                    Promise.all(animePromises),
+                    Promise.all(moviePromises)
+                ]);
 
-                const [movies, anime] = await Promise.all([fetchMovies, fetchAnime]);
+                const rawAnime = animePages.flat();
+                const rawMovies = moviePages.flat();
 
-                allMovies = movies;
-                allAnime = anime;
+                allAnime = rawAnime.map(i => ({
+                    id: 'a_' + i.mal_id,
+                    title: i.title_english || i.title,
+                    type: 'tv',
+                    poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
+                    rating: i.score ? i.score.toFixed(1) : '8.0',
+                    year: i.year || '2024',
+                    lang: 'Sub/Dub',
+                    isAnime: true
+                }));
+
+                allMovies = rawMovies.map(i => ({
+                    id: 'm_' + i.id,
+                    title: i.title || i.name,
+                    type: 'movie',
+                    poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
+                    rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
+                    year: (i.release_date || '2024').substring(0, 4),
+                    lang: 'Hindi/Eng',
+                    isAnime: false
+                }));
 
                 renderGrid(allMovies, 'contentGrid');
                 renderGrid(allAnime, 'contentGrid2');
 
             } catch (err) {
-                console.log("Error loading content");
+                console.log("Error loading content securely", err);
             }
         }
 
@@ -120,9 +223,14 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 const realId = item.id.replace(/^[ma]_/, '');
-                card.onclick = () => window.location.href = `player.html?id=${realId}&type=${item.type}`;
                 
-                const safeTitle = item.title ? item.title.replace(/'/g, "") : "Movie";
+                if(item.isAnime) {
+                    card.onclick = () => window.location.href = `player.html?id=${realId}&type=tv&isAnime=true`;
+                } else {
+                    card.onclick = () => window.location.href = `player.html?id=${realId}&type=${item.type}&isAnime=false`;
+                }
+                
+                const safeTitle = item.title ? item.title.replace(/'/g, "") : "Media";
                 card.innerHTML = `
                     <span class="lang-badge">${item.lang}</span>
                     <img src="${item.poster}" alt="${safeTitle}" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/500x750/1e293b/ffffff?text=${encodeURIComponent(safeTitle)}'">
@@ -171,61 +279,17 @@
             }
         }
 
-        async function searchContent() {
-            const q = document.getElementById('searchInput').value.trim().toLowerCase();
-            const t1 = document.getElementById('gridTitle1');
-            const t2 = document.getElementById('gridTitle2');
-            const g2 = document.getElementById('contentGrid2');
+        function searchRedirect() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            if (!query) return;
+            
+            const filteredMovies = allMovies.filter(m => m.title.toLowerCase().includes(query));
+            const filteredAnime = allAnime.filter(a => a.title.toLowerCase().includes(query));
 
-            if (!q) {
-                switchTab('all', document.querySelector('.cat-pill.active'));
-                return;
-            }
-
-            t1.innerText = `🔍 Search Results for: "${q}"`;
-            t2.style.display = 'none';
-            g2.style.display = 'none';
-
-            try {
-                const apiKey = getActiveKey();
-                const tmdbSearch = fetch(`https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${encodeURIComponent(q)}`).then(r => r.json()).catch(() => null);
-                const jikanSearch = fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(q)}&limit=10`).then(r => r.json()).catch(() => null);
-
-                const [tmdbRes, jikanRes] = await Promise.all([tmdbSearch, jikanSearch]);
-                let results = [];
-
-                if (tmdbRes && tmdbRes.results) {
-                    tmdbRes.results.forEach(i => {
-                        results.push({
-                            id: 'm_' + i.id,
-                            title: i.title || i.name,
-                            type: i.media_type === 'tv' ? 'tv' : 'movie',
-                            poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
-                            rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
-                            year: (i.release_date || i.first_air_date || '2024').substring(0, 4),
-                            lang: 'Hindi/Eng'
-                        });
-                    });
-                }
-
-                if (jikanRes && jikanRes.data) {
-                    jikanRes.data.forEach(i => {
-                        results.push({
-                            id: 'a_' + i.mal_id,
-                            title: i.title_english || i.title,
-                            type: 'tv',
-                            poster: i.images?.jpg?.large_image_url || '',
-                            rating: i.score ? i.score.toFixed(1) : '8.0',
-                            year: i.year || '2023',
-                            lang: 'Sub/Dub'
-                        });
-                    });
-                }
-
-                renderGrid(results, 'contentGrid');
-            } catch (e) {
-                console.error(e);
-            }
+            document.getElementById('gridTitle1').innerText = `Search Results for "${query}"`;
+            document.getElementById('gridTitle2').style.display = 'none';
+            document.getElementById('contentGrid2').style.display = 'none';
+            renderGrid([...filteredMovies, ...filteredAnime], 'contentGrid');
         }
 
         fetchMultiSourceContent();
