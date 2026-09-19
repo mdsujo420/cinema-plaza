@@ -125,7 +125,7 @@
         }
         select option { background: #111827; color: #fff; }
 
-        /* Video Frame Wrapper */
+        /* Video Frame Wrapper with Anti-Redirect Shield */
         .video-wrapper {
             position: relative;
             width: 100%;
@@ -139,6 +139,21 @@
             width: 100%;
             height: 100%;
             border: none;
+        }
+        
+        /* Transparent Shield to block first accidental redirect/popup */
+        .redirect-shield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            cursor: pointer;
+            background: transparent;
+        }
+        .redirect-shield.hidden {
+            display: none;
         }
 
         /* Media Info */
@@ -495,18 +510,20 @@
             }
 
             const videoWrapper = document.getElementById('videoWrapper');
-            videoWrapper.innerHTML = '';
+            videoWrapper.innerHTML = `
+                <div class="redirect-shield" id="redirectShield" onclick="dismissShield()"></div>
+                <iframe src="${embedUrl}" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+                    allowfullscreen>
+                </iframe>
+            `;
+        }
 
-            const iframe = document.createElement('iframe');
-            iframe.src = embedUrl;
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-presentation');
-            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-            iframe.setAttribute('allowfullscreen', 'true');
-            iframe.style.width = '100%';
-            iframe.style.height = '100%';
-            iframe.style.border = 'none';
-
-            videoWrapper.appendChild(iframe);
+        function dismissShield() {
+            const shield = document.getElementById('redirectShield');
+            if(shield) {
+                shield.classList.add('hidden');
+            }
         }
 
         fetchDetails();
