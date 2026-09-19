@@ -99,7 +99,7 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        .server-badge, select {
+        select {
             background: #111827;
             border: 1px solid #374151;
             color: #cbd5e1;
@@ -108,11 +108,6 @@
             font-size: 11px;
             font-weight: 600;
             outline: none;
-        }
-        .server-badge {
-            background: linear-gradient(135deg, #38bdf8, #0284c7);
-            color: #070d1b;
-            border-color: #38bdf8;
         }
         select option { background: #111827; color: #fff; }
 
@@ -187,7 +182,11 @@
         <div class="controls-row">
             <div class="control-group">
                 <label>Server:</label>
-                <div class="server-badge">⚡ HD Server (100% Working)</div>
+                <select id="serverSelect" onchange="reloadPlayer()">
+                    <option value="vidsrc_to">⚡ Server 1 (HD)</option>
+                    <option value="vidsrc_me">🔥 Server 2 (Backup)</option>
+                    <option value="embed_su">💫 Server 3 (Alternative)</option>
+                </select>
             </div>
             
             <div class="control-group" id="seasonGroup" style="display:none;">
@@ -298,7 +297,7 @@
             const overview = mediaDetails.synopsis || 'No description available.';
             const episodesCount = mediaDetails.episodes || 12;
 
-            // Enable Episode picker for Anime properly
+            // Force show episode picker for anime
             document.getElementById('seasonGroup').style.display = 'none';
             document.getElementById('episodeGroup').style.display = 'flex';
 
@@ -336,40 +335,43 @@
 
         function reloadPlayer() {
             let embedUrl = '';
+            const server = document.getElementById('serverSelect').value;
             const lang = document.getElementById('langSelect').value;
+            const ep = document.getElementById('episodeSelect').value || 1;
+            const season = document.getElementById('seasonSelect').value || 1;
 
-            if(category === 'anime') {
-                const ep = document.getElementById('episodeSelect').value || 1;
-                if(lang === 'hindi') {
-                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}?audio=hi`;
-                } else if(lang === 'english') {
-                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}?audio=en`;
+            let langParam = '';
+            if(lang === 'hindi') langParam = '&audio=hi';
+            if(lang === 'english') langParam = '&audio=en';
+
+            if(server === 'vidsrc_me') {
+                if(category === 'anime') {
+                    embedUrl = `https://vidsrc.me/embed/anime?anilist=${id}&ep=${ep}${langParam}`;
+                } else if(type === 'tv') {
+                    embedUrl = `https://vidsrc.me/embed/tv?tmdb=${id}&season=${season}&episode=${ep}${langParam}`;
                 } else {
-                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}`;
+                    embedUrl = `https://vidsrc.me/embed/movie?tmdb=${id}${langParam}`;
+                }
+            } else if(server === 'embed_su') {
+                if(category === 'anime') {
+                    embedUrl = `https://embed.su/embed/anime/${id}/${ep}`;
+                } else if(type === 'tv') {
+                    embedUrl = `https://embed.su/embed/tv/${id}/${season}/${ep}`;
+                } else {
+                    embedUrl = `https://embed.su/embed/movie/${id}`;
                 }
             } else {
-                if(type === 'tv') {
-                    const season = document.getElementById('seasonSelect').value || 1;
-                    const episode = document.getElementById('episodeSelect').value || 1;
-                    if(lang === 'hindi') {
-                        embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}?audio=hi`;
-                    } else if(lang === 'english') {
-                        embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}?audio=en`;
-                    } else {
-                        embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`;
-                    }
+                // Default Server 1 (vidsrc.to)
+                if(category === 'anime') {
+                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}?${langParam.replace('&','')}`;
+                } else if(type === 'tv') {
+                    embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${ep}?${langParam.replace('&','')}`;
                 } else {
-                    if(lang === 'hindi') {
-                        embedUrl = `https://vidsrc.to/embed/movie/${id}?audio=hi`;
-                    } else if(lang === 'english') {
-                        embedUrl = `https://vidsrc.to/embed/movie/${id}?audio=en`;
-                    } else {
-                        embedUrl = `https://vidsrc.to/embed/movie/${id}`;
-                    }
+                    embedUrl = `https://vidsrc.to/embed/movie/${id}?${langParam.replace('&','')}`;
                 }
             }
 
-            document.getElementById('videoWrapper').innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+            document.getElementById('videoWrapper').innerHTML = `<iframe src="${embedUrl}" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe>`;
         }
 
         fetchDetails();
