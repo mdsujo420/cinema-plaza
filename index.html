@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cinema Plaza - Premium Streaming</title>
-    <!-- HLS Player CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0f172a; color: #fff; padding: 20px; }
@@ -24,12 +22,14 @@
         .badge { background: #38bdf8; color: #0f172a; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
         .loader { text-align: center; font-size: 1.5rem; color: #38bdf8; margin-top: 50px; }
 
-        /* Video Modal */
+        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { position: relative; width: 90%; max-width: 800px; background: #1e293b; border-radius: 12px; overflow: hidden; }
         .close-btn { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 30px; font-weight: bold; cursor: pointer; z-index: 1001; }
-        .player-box { width: 100%; height: 450px; background: #000; display: flex; justify-content: center; align-items: center; }
-        video, iframe { width: 100%; height: 100%; border: 0; }
+        .server-switcher { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #0f172a; }
+        .server-switcher button { padding: 5px 12px; font-size: 0.85rem; }
+        .iframe-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+        .iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
     </style>
 </head>
 <body>
@@ -52,18 +52,22 @@
     <div id="videoModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closePlayer()">&times;</span>
-            <div class="player-box" id="playerContainer"></div>
+            <div class="server-switcher" id="serverButtons"></div>
+            <div class="iframe-container">
+                <!-- Sandbox stops redirecting popup ads -->
+                <iframe id="videoPlayer" src="" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+            </div>
         </div>
     </div>
 
     <script>
-        const API_URL = 'https://cinema-plaza.onrender.com/api';
+        const API_URL = 'https://cinema-plaza.onrender.com/api/content';
         let allData = [];
-        let hlsPlayer = null;
+        let currentItem = null;
 
         async function loadContent() {
             try {
-                const response = await fetch(`${API_URL}/content`);
+                const response = await fetch(API_URL);
                 const data = await response.json();
                 if(data.success) {
                     allData = data.data;
@@ -103,47 +107,49 @@
             else renderCards(allData.filter(i => i.type === type));
         }
 
-        async function openPlayer(item) {
+        function openPlayer(item) {
+            currentItem = item;
             const playerModal = document.getElementById('videoModal');
-            const container = document.getElementById('playerContainer');
-            container.innerHTML = '<p style="color:#38bdf8;">Fetching Video Stream...</p>';
+            const serverButtons = document.getElementById('serverButtons');
+
+            if(item.type === 'movie') {
+                serverButtons.innerHTML = `
+                    <button onclick="changeServer('vidsrc_cc')">Server 1</button>
+                    <button onclick="changeServer('vidsrc_me')">Server 2</button>
+                `;
+                changeServer('vidsrc_cc');
+            } else {
+                serverButtons.innerHTML = `
+                    <button onclick="changeServer('anime_1')">Anime Server 1</button>
+                    <button onclick="changeServer('anime_2')">Anime Server 2</button>
+                `;
+                changeServer('anime_1');
+            }
+
             playerModal.style.display = 'flex';
+        }
 
-            try {
-                const res = await fetch(`${API_URL}/stream?type=${item.type}&id=${item.id}&title=${encodeURIComponent(item.title)}`);
-                const data = await res.json();
+        function changeServer(server) {
+            const iframe = document.getElementById('videoPlayer');
+            const id = currentItem.id;
+            const title = encodeURIComponent(currentItem.title);
 
-                if(data.success) {
-                    if(data.isHls) {
-                        container.innerHTML = '<video id="myVideo" controls autoplay></video>';
-                        const video = document.getElementById('myVideo');
-                        
-                        if (Hls.isSupported()) {
-                            hlsPlayer = new Hls();
-                            hlsPlayer.loadSource(data.streamUrl);
-                            hlsPlayer.attachMedia(video);
-                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                            video.src = data.streamUrl;
-                        }
-                    } else {
-                        container.innerHTML = `<iframe src="${data.streamUrl}" allowfullscreen></iframe>`;
-                    }
-                } else {
-                    container.innerHTML = '<p style="color:red;">Stream unavailable.</p>';
-                }
-            } catch (err) {
-                container.innerHTML = '<p style="color:red;">Error loading player.</p>';
+            if(server === 'vidsrc_cc') {
+                iframe.src = `https://vidsrc.cc/v2/embed/movie/${id}`;
+            } else if(server === 'vidsrc_me') {
+                iframe.src = `https://vidsrc.me/embed/movie?tmdb=${id}`;
+            } else if(server === 'anime_1') {
+                // Working Anime Embed Player Source
+                iframe.src = `https://vidsrc.sbs/embed/anime/${id}`;
+            } else if(server === 'anime_2') {
+                iframe.src = `https://2embed.org/embed/anime/${id}`;
             }
         }
 
         function closePlayer() {
             const playerModal = document.getElementById('videoModal');
-            const container = document.getElementById('playerContainer');
-            if(hlsPlayer) {
-                hlsPlayer.destroy();
-                hlsPlayer = null;
-            }
-            container.innerHTML = '';
+            const iframe = document.getElementById('videoPlayer');
+            iframe.src = ''; 
             playerModal.style.display = 'none';
         }
 
