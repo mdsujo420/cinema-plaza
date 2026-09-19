@@ -3,202 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cinema Plaza - Global Streaming Hub</title>
+    <title>Movebox Plaza - Unlimited Movies & Anime</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: #070a12; color: #f1f5f9; padding: 24px; min-height: 100vh; }
-        
-        header { text-align: center; margin-bottom: 35px; }
-        h1 { background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
-        p { color: #64748b; font-size: 1rem; font-weight: 500; }
-        
-        .filters { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
-        .filter-btn { background: rgba(30, 41, 59, 0.7); color: #94a3b8; border: 1px solid #334155; padding: 10px 24px; border-radius: 30px; cursor: pointer; font-size: 0.95rem; font-weight: 600; transition: all 0.25s ease; backdrop-filter: blur(10px); }
-        .filter-btn:hover, .filter-btn.active { background: #38bdf8; color: #070a12; border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 22px; }
-        .card { background: rgba(15, 23, 42, 0.75); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative; }
-        .card:hover { transform: translateY(-8px) scale(1.02); border-color: #38bdf8; box-shadow: 0 12px 30px rgba(0,0,0,0.6), 0 0 15px rgba(56, 189, 248, 0.2); }
-        .card img { width: 100%; height: 280px; object-fit: cover; }
-        .card-content { padding: 14px; }
-        .card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f8fafc; }
-        .card-info { font-size: 0.8rem; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; }
-        .badge { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
-        
-        .loader { text-align: center; font-size: 1.2rem; color: #38bdf8; margin-top: 80px; font-weight: 600; }
-
-        /* Premium Modal Player */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(12px); justify-content: center; align-items: flex-start; z-index: 9999; overflow-y: auto; padding: 30px 15px; }
-        .modal-content { position: relative; width: 100%; max-width: 1050px; background: #0f172a; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9); margin: auto; }
-        .close-btn { position: absolute; top: 16px; right: 20px; color: #94a3b8; font-size: 28px; font-weight: bold; cursor: pointer; z-index: 1010; width: 36px; height: 36px; background: rgba(15, 23, 42, 0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.1); transition: 0.2s; }
-        .close-btn:hover { color: #fff; background: #f43f5e; border-color: #f43f5e; }
-        
-        /* Control Bar */
-        .controls-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; background: #1e293b; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-        .control-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .control-label { font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
-        .controls-bar select { background: #0f172a; color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; outline: none; cursor: pointer; transition: 0.2s; }
-        
-        .lang-banner { background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; color: #cbd5e1; padding: 10px 16px; font-size: 0.82rem; }
-
-        .iframe-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
-        .iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-
-        /* Media Details Drawer */
-        .media-details { padding: 24px; background: #0f172a; }
-        .media-header { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-        .media-poster { width: 110px; height: 160px; border-radius: 12px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
-        .media-meta { flex: 1; min-width: 250px; }
-        .media-title { font-size: 1.6rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; }
-        .media-tags { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-        .tag { background: rgba(255,255,255,0.06); color: #cbd5e1; padding: 4px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; }
-        .rating-tag { background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
-        .media-overview { font-size: 0.9rem; color: #94a3b8; line-height: 1.6; max-height: 90px; overflow-y: auto; }
-
-        .episodes-section { margin-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 20px; }
-        .section-title { font-size: 1.1rem; font-weight: 700; color: #f8fafc; margin-bottom: 12px; }
-        
-        .season-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
-        .season-tab { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 8px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
-        .season-tab.active { background: #38bdf8; color: #070a12; border-color: #38bdf8; font-weight: 700; }
-
-        .episode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; max-height: 180px; overflow-y: auto; }
-        .ep-btn { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 10px 0; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
-        .ep-btn.active { background: #38bdf8; color: #070a12; border-color: #38bdf8; font-weight: 700; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <h1>🎬 Cinema Plaza</h1>
-        <p>Explore & Stream Unlimited Movies, Series & Anime</p>
+        <a href="index.html" class="logo">🍿 Movebox</a>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search Movies / TV Shows / Anime..." onkeyup="searchContent()">
+        </div>
     </header>
 
-    <div class="filters">
-        <button class="filter-btn active" onclick="filterContent('all', this)">All Content</button>
-        <button class="filter-btn" onclick="filterContent('movie', this)">Movies</button>
-        <button class="filter-btn" onclick="filterContent('tv', this)">TV Series & Anime</button>
+    <div class="categories-bar">
+        <div class="cat-pill active" onclick="filterCat('all', this)">🏠 Home</div>
+        <div class="cat-pill" onclick="filterCat('tv', this)">📺 TV Shows</div>
+        <div class="cat-pill" onclick="filterCat('movie', this)">🎬 Movies</div>
+        <div class="cat-pill" onclick="filterCat('anime', this)">⚡ Anime</div>
+        <div class="cat-pill" onclick="filterCat('trending', this)">🔥 Trending</div>
     </div>
 
-    <div id="loader" class="loader">Loading Library...</div>
-    <div id="content-grid" class="grid"></div>
+    <div class="main-container">
+        <!-- Top Banner Ad (Header/Hero Below Slot) -->
+        <div id="homeTopAd"></div>
 
-    <!-- Video Modal Player -->
-    <div id="videoModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closePlayer()">&times;</span>
-            
-            <div class="controls-bar">
-                <div class="control-group">
-                    <span class="control-label">STREAM SERVER:</span>
-                    <select id="serverSelect" onchange="updateStreamUrl()">
-                        <option value="vidsrc">Server 1 (VidSrc Pro - Multi Sub/Dub)</option>
-                        <option value="vidlink">Server 2 (VidLink - Fast Load)</option>
-                        <option value="autoembed">Server 3 (AutoEmbed)</option>
-                    </select>
-                </div>
-            </div>
+        <div class="section-title">🔥 Trending Now</div>
+        <div id="contentGrid" class="grid"></div>
 
-            <div class="lang-banner">
-                💡 <b>Audio & Subtitles Notice:</b> Audio and subtitles depend on stream availability. Use the player controls (⚙️ or CC) to select preferred subtitles if provided.
-            </div>
+        <!-- In-Between Grid Banner Ads (Movebox Native Style) -->
+        <div id="homeMiddleAd" class="ad-grid-row"></div>
 
-            <div class="iframe-container">
-                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-            </div>
-
-            <!-- Media Details Drawer -->
-            <div class="media-details">
-                <div class="media-header">
-                    <img id="detailPoster" class="media-poster" src="" alt="Poster">
-                    <div class="media-meta">
-                        <h2 id="detailTitle" class="media-title">Title Loading...</h2>
-                        <div class="media-tags">
-                            <span id="detailRating" class="tag rating-tag">⭐ 0.0</span>
-                            <span id="detailType" class="tag">TYPE</span>
-                            <span id="detailYear" class="tag">YEAR</span>
-                        </div>
-                        <p id="detailOverview" class="media-overview">Loading description...</p>
-                    </div>
-                </div>
-
-                <!-- Season & Episode Drawer -->
-                <div id="seriesControls" class="episodes-section" style="display: none;">
-                    <div class="section-title">Seasons & Episodes</div>
-                    <div id="seasonTabs" class="season-tabs"></div>
-                    <div id="episodeGrid" class="episode-grid"></div>
-                </div>
-            </div>
-        </div>
+        <div class="section-title">📺 Popular Content</div>
+        <div id="contentGrid2" class="grid"></div>
     </div>
 
+    <script src="ads.js"></script>
     <script>
-        window.open = function() { return null; }; // Prevent Popup Redirects
-
         const TMDB_API_KEY = '15d2ea64021d46a192f0b70ed4b2cd35';
-        const API_URL = 'https://cinema-plaza.onrender.com/api/content';
-        
-        let allData = [];
-        let currentItem = null;
-        let currentSeason = 1;
-        let currentEpisode = 1;
+        let allItems = [];
 
         async function loadContent() {
             try {
-                // Fetch from Backend API
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                if(data.success && data.data.length > 0) {
-                    allData = data.data;
-                }
-            } catch (error) {
-                console.log("Backend offline, fetching direct TMDB trendings...");
-            }
-
-            // Fallback: Fetch TMDB Trending Data to show lots of movies & series worldwide
-            if(allData.length < 10) {
-                await fetchTmdbTrending();
-            }
-
-            document.getElementById('loader').style.display = 'none';
-            renderCards(allData);
-        }
-
-        async function fetchTmdbTrending() {
-            try {
                 const res = await fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${TMDB_API_KEY}`);
                 const data = await res.json();
-                
                 if(data.results) {
-                    const tmdbItems = data.results.map(item => ({
-                        id: item.id,
-                        title: item.title || item.name,
-                        type: item.media_type === 'movie' ? 'movie' : 'tv',
-                        poster: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '',
-                        rating: item.vote_average ? item.vote_average.toFixed(1) : '8.0',
-                        year: (item.release_date || item.first_air_date || '2024').substring(0, 4)
+                    allItems = data.results.map(i => ({
+                        id: i.id,
+                        title: i.title || i.name,
+                        type: i.media_type === 'movie' ? 'movie' : 'tv',
+                        poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
+                        rating: i.vote_average ? i.vote_average.toFixed(1) : '8.0',
+                        year: (i.release_date || i.first_air_date || '2024').substring(0, 4),
+                        lang: i.original_language === 'ja' ? 'Sub/Dub' : 'Hindi/Eng'
                     }));
-                    allData = [...allData, ...tmdbItems];
+
+                    renderGrid(allItems.slice(0, 10), 'contentGrid');
+                    renderGrid(allItems.slice(10, 20), 'contentGrid2');
                 }
-            } catch(e) {}
+            } catch(e) { console.error(e); }
         }
 
-        function renderCards(items) {
-            const grid = document.getElementById('content-grid');
+        function renderGrid(list, targetId) {
+            const grid = document.getElementById(targetId);
+            if(!grid) return;
             grid.innerHTML = '';
-            items.forEach(item => {
+            list.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => openPlayer(item);
+                card.onclick = () => {
+                    window.location.href = `player.html?id=${item.id}&type=${item.type}`;
+                };
                 card.innerHTML = `
-                    <img src="${item.poster || 'https://via.placeholder.com/500x750?text=No+Poster'}" alt="${item.title}" loading="lazy">
+                    <span class="lang-badge">${item.lang}</span>
+                    <img src="${item.poster || 'https://via.placeholder.com/500x750'}" loading="lazy">
                     <div class="card-content">
-                        <div class="card-title" title="${item.title}">${item.title}</div>
+                        <div class="card-title">${item.title}</div>
                         <div class="card-info">
-                            <span class="badge">${item.type}</span>
-                            <span>⭐ ${item.rating || 'N/A'}</span>
+                            <span>⭐ ${item.rating}</span>
+                            <span>${item.year}</span>
                         </div>
                     </div>
                 `;
@@ -206,134 +89,29 @@
             });
         }
 
-        function filterContent(type, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        function filterCat(cat, btn) {
+            document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            if(type === 'all') renderCards(allData);
-            else renderCards(allData.filter(i => i.type === type));
-        }
-
-        async function openPlayer(item) {
-            currentItem = item;
-            currentSeason = 1;
-            currentEpisode = 1;
-
-            const modal = document.getElementById('videoModal');
-            const seriesControls = document.getElementById('seriesControls');
-
-            document.getElementById('detailTitle').innerText = item.title;
-            document.getElementById('detailPoster').src = item.poster || '';
-            document.getElementById('detailRating').innerText = `⭐ ${item.rating || 'N/A'}`;
-            document.getElementById('detailType').innerText = item.type.toUpperCase();
-            document.getElementById('detailYear').innerText = item.year || '2024';
-            document.getElementById('detailOverview').innerText = 'Loading description...';
-
-            if(item.type === 'anime' || item.type === 'tv') {
-                seriesControls.style.display = 'block';
-                await fetchRealTmdbData(item.id);
+            if(cat === 'all' || cat === 'trending') {
+                renderGrid(allItems.slice(0, 10), 'contentGrid');
+                renderGrid(allItems.slice(10, 20), 'contentGrid2');
             } else {
-                seriesControls.style.display = 'none';
-                await fetchMovieTmdbData(item.id);
-                updateStreamUrl();
-            }
-
-            modal.style.display = 'flex';
-        }
-
-        async function fetchRealTmdbData(tmdbId) {
-            try {
-                const res = await fetch(`https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${TMDB_API_KEY}`);
-                const data = await res.json();
-                
-                if(data.overview) document.getElementById('detailOverview').innerText = data.overview;
-                
-                const seasonTabs = document.getElementById('seasonTabs');
-                seasonTabs.innerHTML = '';
-
-                const validSeasons = (data.seasons || []).filter(s => s.season_number > 0);
-                
-                if(validSeasons.length > 0) {
-                    validSeasons.forEach((season, index) => {
-                        const tab = document.createElement('div');
-                        tab.className = `season-tab ${index === 0 ? 'active' : ''}`;
-                        tab.innerText = `Season ${season.season_number}`;
-                        tab.onclick = () => selectSeason(season.season_number, season.episode_count, tab);
-                        seasonTabs.appendChild(tab);
-                    });
-                    
-                    selectSeason(validSeasons[0].season_number, validSeasons[0].episode_count, seasonTabs.children[0]);
-                } else {
-                    fallbackSeasons();
-                }
-            } catch(e) {
-                fallbackSeasons();
+                const filtered = allItems.filter(i => cat === 'anime' ? (i.lang === 'Sub/Dub' || i.type === 'tv') : i.type === cat);
+                renderGrid(filtered, 'contentGrid');
+                document.getElementById('contentGrid2').innerHTML = '';
             }
         }
 
-        async function fetchMovieTmdbData(tmdbId) {
-            try {
-                const res = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${TMDB_API_KEY}`);
-                const data = await res.json();
-                if(data.overview) document.getElementById('detailOverview').innerText = data.overview;
-            } catch(e) {}
+        function searchContent() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allItems.filter(i => i.title.toLowerCase().includes(q));
+            renderGrid(filtered, 'contentGrid');
+            document.getElementById('contentGrid2').innerHTML = '';
         }
 
-        function fallbackSeasons() {
-            const seasonTabs = document.getElementById('seasonTabs');
-            seasonTabs.innerHTML = '<div class="season-tab active">Season 1</div>';
-            renderEpisodes(12);
-            updateStreamUrl();
-        }
-
-        function selectSeason(seasonNum, episodeCount, tabElement) {
-            currentSeason = seasonNum;
-            currentEpisode = 1;
-
-            document.querySelectorAll('.season-tab').forEach(t => t.classList.remove('active'));
-            if(tabElement) tabElement.classList.add('active');
-
-            renderEpisodes(episodeCount || 12);
-            updateStreamUrl();
-        }
-
-        function renderEpisodes(count) {
-            const grid = document.getElementById('episodeGrid');
-            grid.innerHTML = '';
-            for(let i = 1; i <= count; i++) {
-                const epBtn = document.createElement('div');
-                epBtn.className = `ep-btn ${i === currentEpisode ? 'active' : ''}`;
-                epBtn.innerText = i;
-                epBtn.onclick = () => {
-                    currentEpisode = i;
-                    document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
-                    epBtn.classList.add('active');
-                    updateStreamUrl();
-                };
-                grid.appendChild(epBtn);
-            }
-        }
-
-        function updateStreamUrl() {
-            const iframe = document.getElementById('videoPlayer');
-            const server = document.getElementById('serverSelect').value;
-            const id = currentItem.id;
-
-            if(currentItem.type === 'movie') {
-                if(server === 'vidsrc') iframe.src = `https://vidsrc.cc/v2/embed/movie/${id}`;
-                else if(server === 'vidlink') iframe.src = `https://vidlink.pro/movie/${id}`;
-                else iframe.src = `https://player.autoembed.cc/embed/movie/${id}`;
-            } else {
-                if(server === 'vidsrc') iframe.src = `https://vidsrc.cc/v2/embed/tv/${id}/${currentSeason}/${currentEpisode}`;
-                else if(server === 'vidlink') iframe.src = `https://vidlink.pro/tv/${id}/${currentSeason}/${currentEpisode}`;
-                else iframe.src = `https://player.autoembed.cc/embed/tv/${id}/${currentSeason}/${currentEpisode}`;
-            }
-        }
-
-        function closePlayer() {
-            document.getElementById('videoModal').style.display = 'none';
-            document.getElementById('videoPlayer').src = '';
-        }
-
+        // Render Ads on Home
+        renderAdBanner('homeTopAd', 'leaderboard');
+        renderAdBanner('homeMiddleAd', 'banner');
         loadContent();
     </script>
 </body>
