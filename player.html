@@ -1,38 +1,227 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch - Movie Plaza</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        body {
+            background-color: #070d1b;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(7, 13, 27, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: #38bdf8;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .logo {
+            font-size: 15px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #38ef7d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+        }
+        .search-bar input {
+            padding: 6px 10px;
+            width: 130px;
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            color: #fff;
+            outline: none;
+            font-size: 11px;
+        }
+        @media (min-width: 768px) {
+            header { padding: 15px 5%; }
+            .logo { font-size: 24px; }
+            .search-bar input { width: 220px; font-size: 13px; }
+        }
+
+        .player-container {
+            width: 94%;
+            max-width: 1000px;
+            margin: 15px auto;
+        }
+        @media (min-width: 768px) {
+            .player-container { margin: 25px auto; }
+        }
+
+        /* Controls Section */
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+            background: #0b132b;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .control-group label {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .server-btn, select {
+            background: #111827;
+            border: 1px solid #374151;
+            color: #cbd5e1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+        .server-btn.active {
+            background: linear-gradient(135deg, #38bdf8, #0284c7);
+            color: #070d1b;
+            border-color: #38bdf8;
+        }
+        select option { background: #111827; color: #fff; }
+
+        /* Video Frame */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        .video-wrapper iframe, .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Media Info */
+        .media-info {
+            background: #0b132b;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .media-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        @media (min-width: 768px) { .media-title { font-size: 24px; } }
+        .media-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .media-meta span { color: #38bdf8; }
+        .media-desc {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        .cast-section {
+            margin-top: 12px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        .cast-section b { color: #fff; }
+        .loader { text-align: center; padding: 40px; color: #38bdf8; font-size: 14px; }
+    </style>
 </head>
 <body>
 
     <header>
-        <a href="index.html" class="logo">🎬 Movie Plaza</a>
+        <div class="header-left">
+            <a href="index.html" class="back-btn">←</a>
+            <a href="index.html" class="logo">✨ Movie Plaza</a>
+        </div>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search Movies / Anime..." onkeypress="if(event.key === 'Enter') searchRedirect()">
+            <input type="text" placeholder="Search..." disabled>
         </div>
     </header>
 
     <div class="player-container">
-        <div class="servers-bar">
-            <span style="color: #94a3b8; font-weight: 600; font-size: 14px;">SERVER:</span>
-            <button class="server-btn active" onclick="changeServer(1, this)">Server 1 (Fast)</button>
-            <button class="server-btn" onclick="changeServer(2, this)">Server 2 (HD)</button>
-            <button class="server-btn" onclick="changeServer(3, this)">Server 3 (Multi-Lang)</button>
+        <!-- Control Options: Servers, Season, Episode, Language -->
+        <div class="controls-row">
+            <div class="control-group">
+                <label>Server:</label>
+                <button class="server-btn active" onclick="switchServer(1, this)">Server 1</button>
+                <button class="server-btn" onclick="switchServer(2, this)">Server 2</button>
+                <button class="server-btn" onclick="switchServer(3, this)">Server 3</button>
+            </div>
+            <div class="control-group" id="seasonGroup" style="display:none;">
+                <label>Season:</label>
+                <select id="seasonSelect" onchange="updateEpisodes()">
+                    <option value="1">Season 1</option>
+                </select>
+            </div>
+            <div class="control-group" id="episodeGroup" style="display:none;">
+                <label>Episode:</label>
+                <select id="episodeSelect" onchange="changeEpisode()">
+                    <option value="1">Ep 1</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Lang:</label>
+                <select id="langSelect">
+                    <option value="sub">Sub/Dub</option>
+                    <option value="hindi">Hindi</option>
+                    <option value="english">English</option>
+                </select>
+            </div>
         </div>
 
-        <div class="video-wrapper">
-            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+        <!-- Video Player Box -->
+        <div class="video-wrapper" id="videoWrapper">
+            <div class="loader" style="padding-top: 20%;">Loading player...</div>
         </div>
 
-        <div class="details-card" id="detailsCard">
-            <h2 id="movieTitle" style="color: #fff; font-size: 20px; margin-bottom: 5px;">Loading...</h2>
-            <p id="movieGenres" style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;"></p>
-            <h3 style="color: #fff; font-size: 16px; margin-bottom: 10px;">Top Cast</h3>
-            <div id="castList" style="color: #94a3b8; font-size: 14px;">Loading cast...</div>
+        <!-- Details & Description -->
+        <div class="media-info" id="mediaInfo">
+            <div class="loader">Loading details...</div>
         </div>
     </div>
 
@@ -40,55 +229,125 @@
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
         const type = urlParams.get('type') || 'movie';
+        const category = urlParams.get('category') || 'movie';
 
-        const iframe = document.getElementById('videoPlayer');
+        let mediaDetails = null;
+        let currentServerUrl = '';
 
-        function changeServer(serverNum, btn) {
+        async function fetchDetails() {
+            if(!id) {
+                document.getElementById('videoWrapper').innerHTML = '<div class="loader">Media not found!</div>';
+                return;
+            }
+
+            try {
+                if(category === 'anime') {
+                    const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
+                    const data = await res.json();
+                    mediaDetails = data.data;
+                    renderAnimeContent();
+                } else {
+                    const apiKey = '1a878c977c07619736ef416785671db8';
+                    const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${apiKey}&append_to_response=credits,external_ids`);
+                    mediaDetails = await res.json();
+                    renderTMDBContent();
+                }
+            } catch(e) {
+                document.getElementById('videoWrapper').innerHTML = '<div class="loader">Failed to load stream.</div>';
+            }
+        }
+
+        function renderTMDBContent() {
+            const title = mediaDetails.title || mediaDetails.name;
+            const year = (mediaDetails.release_date || mediaDetails.first_air_date || '2026').substring(0,4);
+            const rating = mediaDetails.vote_average ? mediaDetails.vote_average.toFixed(1) : '7.5';
+            const overview = mediaDetails.overview || 'No description available.';
+            const cast = mediaDetails.credits?.cast ? mediaDetails.credits.cast.slice(0,4).map(c => c.name).join(', ') : 'N/A';
+
+            // Setup Server Embeds
+            currentServerUrl = `https://vidsrc.to/embed/${type}/${id}`;
+            loadPlayer(currentServerUrl);
+
+            // Show Season/Episode if TV series
+            if(type === 'tv' && mediaDetails.number_of_seasons) {
+                document.getElementById('seasonGroup').style.display = 'flex';
+                document.getElementById('episodeGroup').style.display = 'flex';
+                let sOptions = '';
+                for(let i=1; i<=mediaDetails.number_of_seasons; i++) {
+                    sOptions += `<option value="${i}">Season ${i}</option>`;
+                }
+                document.getElementById('seasonSelect').innerHTML = sOptions;
+                updateEpisodes();
+            }
+
+            document.getElementById('mediaInfo').innerHTML = `
+                <div class="media-title">${title}</div>
+                <div class="media-meta">
+                    <span>⭐ ${rating}</span>
+                    <span>📅 ${year}</span>
+                    <span>🎬 ${type.toUpperCase()}</span>
+                </div>
+                <div class="media-desc">${overview}</div>
+                <div class="cast-section"><b>Top Cast:</b> ${cast}</div>
+            `;
+        }
+
+        function renderAnimeContent() {
+            const title = mediaDetails.title_english || mediaDetails.title;
+            const year = mediaDetails.year || '2026';
+            const rating = mediaDetails.score ? mediaDetails.score.toFixed(1) : '8.0';
+            const overview = mediaDetails.synopsis || 'No description available.';
+
+            currentServerUrl = `https://vidsrc.to/embed/anime/${id}`;
+            loadPlayer(currentServerUrl);
+
+            document.getElementById('mediaInfo').innerHTML = `
+                <div class="media-title">${title}</div>
+                <div class="media-meta">
+                    <span>⭐ ${rating}</span>
+                    <span>📅 ${year}</span>
+                    <span>⚡ ANIME</span>
+                </div>
+                <div class="media-desc">${overview}</div>
+            `;
+        }
+
+        function loadPlayer(embedUrl) {
+            document.getElementById('videoWrapper').innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+        }
+
+        function switchServer(serverNum, btn) {
             document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            if (serverNum === 1) {
-                iframe.src = `https://vidsrc.xyz/embed/${type}?tmdb=${id}`;
-            } else if (serverNum === 2) {
-                iframe.src = `https://vidsrc.to/embed/${type}/${id}`;
-            } else if (serverNum === 3) {
-                iframe.src = `https://embed.su/embed/${type}/${id}`;
+            let embedUrl = '';
+            if(category === 'anime') {
+                if(serverNum === 1) embedUrl = `https://vidsrc.to/embed/anime/${id}`;
+                else if(serverNum === 2) embedUrl = `https://animekhor.cc/embed/${id}`;
+                else embedUrl = `https://vidsrc.me/embed/anime?mal_id=${id}`;
+            } else {
+                if(serverNum === 1) embedUrl = `https://vidsrc.to/embed/${type}/${id}`;
+                else if(serverNum === 2) embedUrl = `https://vidsrc.me/embed/${type}?tmdb=${id}`;
+                else embedUrl = `https://iframe.multiembed.mov/?tmdb=${id}`;
             }
+            loadPlayer(embedUrl);
         }
 
-        iframe.src = `https://vidsrc.xyz/embed/${type}?tmdb=${id}`;
-
-        async function fetchDetails() {
-            const TMDB_API_KEYS = [
-                '1a878c977c07619736ef416785671db8',
-                '9e303205ce05a268cb89dfaa06b3f1f0',
-                'aab07fec041a520555467df59e5a4f64'
-            ];
-            const apiKey = TMDB_API_KEYS[0];
-
-            try {
-                const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${apiKey}&append_to_response=credits`);
-                const data = await res.json();
-
-                if (data) {
-                    document.getElementById('movieTitle').innerText = data.title || data.name || 'Unknown Title';
-                    const genres = data.genres ? data.genres.map(g => g.name).join(', ') : '';
-                    const year = (data.release_date || data.first_air_date || '').substring(0, 4);
-                    document.getElementById('movieGenres').innerText = `${year} • ${genres}`;
-
-                    if (data.credits && data.credits.cast) {
-                        const castNames = data.credits.cast.slice(0, 5).map(c => c.name).join(', ');
-                        document.getElementById('castList').innerText = castNames || 'No cast info available';
-                    }
-                }
-            } catch (e) {
-                console.log("Error loading details");
+        function updateEpisodes() {
+            const season = document.getElementById('seasonSelect').value;
+            // Simplified episode loader mock for TMDB TV series
+            let epOptions = '';
+            for(let i=1; i<=20; i++) {
+                epOptions += `<option value="${i}">Ep ${i}</option>`;
             }
+            document.getElementById('episodeSelect').innerHTML = epOptions;
         }
 
-        function searchRedirect() {
-            const q = document.getElementById('searchInput').value;
-            if(q) window.location.href = `index.html?search=${encodeURIComponent(q)}`;
+        function changeEpisode() {
+            const season = document.getElementById('seasonSelect').value;
+            const episode = document.getElementById('episodeSelect').value;
+            const embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`;
+            loadPlayer(embedUrl);
         }
 
         fetchDetails();
