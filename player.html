@@ -183,7 +183,7 @@
     </header>
 
     <div class="player-container">
-        <!-- Controls: Fast Server, Season, Episode, Language -->
+        <!-- Controls -->
         <div class="controls-row">
             <div class="control-group">
                 <label>Server:</label>
@@ -192,7 +192,7 @@
             
             <div class="control-group" id="seasonGroup" style="display:none;">
                 <label>Season:</label>
-                <select id="seasonSelect" onchange="changeSeasonAndEpisodes()">
+                <select id="seasonSelect" onchange="updateEpisodeList()">
                     <option value="1">Season 1</option>
                 </select>
             </div>
@@ -200,16 +200,16 @@
             <div class="control-group" id="episodeGroup" style="display:none;">
                 <label>Episode:</label>
                 <select id="episodeSelect" onchange="reloadPlayer()">
-                    <option value="1">Ep 1</option>
+                    <option value="1">Episode 1</option>
                 </select>
             </div>
 
-            <div class="control-group" id="langGroup" style="display:none;">
+            <div class="control-group" id="langGroup">
                 <label>Language:</label>
                 <select id="langSelect" onchange="reloadPlayer()">
-                    <option value="sub">Sub / Dub</option>
-                    <option value="hindi">Hindi</option>
-                    <option value="english">English</option>
+                    <option value="sub">Sub / Dub (Original)</option>
+                    <option value="hindi">Hindi Dubbed</option>
+                    <option value="english">English Dubbed</option>
                 </select>
             </div>
         </div>
@@ -263,7 +263,6 @@
             const overview = mediaDetails.overview || 'No description available.';
             const cast = mediaDetails.credits?.cast ? mediaDetails.credits.cast.slice(0,4).map(c => c.name).join(', ') : 'N/A';
 
-            // Check if it's a TV Series to show Season & Episode
             if(type === 'tv' && mediaDetails.seasons) {
                 document.getElementById('seasonGroup').style.display = 'flex';
                 document.getElementById('episodeGroup').style.display = 'flex';
@@ -277,9 +276,6 @@
                 document.getElementById('seasonSelect').innerHTML = sOptions;
                 updateEpisodeList();
             }
-
-            // Show Language selector only for titles that support multi-language options
-            document.getElementById('langGroup').style.display = 'flex';
 
             reloadPlayer();
 
@@ -302,10 +298,9 @@
             const overview = mediaDetails.synopsis || 'No description available.';
             const episodesCount = mediaDetails.episodes || 12;
 
-            // Anime Series Season/Episode management
-            document.getElementById('seasonGroup').style.display = 'none'; // Anime usually handled by total episodes directly or single season view
+            // Enable Episode picker for Anime properly
+            document.getElementById('seasonGroup').style.display = 'none';
             document.getElementById('episodeGroup').style.display = 'flex';
-            document.getElementById('langGroup').style.display = 'flex';
 
             let epOptions = '';
             for(let i = 1; i <= episodesCount; i++) {
@@ -339,25 +334,38 @@
             reloadPlayer();
         }
 
-        function changeSeasonAndEpisodes() {
-            updateEpisodeList();
-        }
-
         function reloadPlayer() {
             let embedUrl = '';
             const lang = document.getElementById('langSelect').value;
 
             if(category === 'anime') {
                 const ep = document.getElementById('episodeSelect').value || 1;
-                // Stable 100% working anime embed link with episode support
-                embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}`;
+                if(lang === 'hindi') {
+                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}?audio=hi`;
+                } else if(lang === 'english') {
+                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}?audio=en`;
+                } else {
+                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}`;
+                }
             } else {
                 if(type === 'tv') {
                     const season = document.getElementById('seasonSelect').value || 1;
                     const episode = document.getElementById('episodeSelect').value || 1;
-                    embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`;
+                    if(lang === 'hindi') {
+                        embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}?audio=hi`;
+                    } else if(lang === 'english') {
+                        embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}?audio=en`;
+                    } else {
+                        embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`;
+                    }
                 } else {
-                    embedUrl = `https://vidsrc.to/embed/movie/${id}`;
+                    if(lang === 'hindi') {
+                        embedUrl = `https://vidsrc.to/embed/movie/${id}?audio=hi`;
+                    } else if(lang === 'english') {
+                        embedUrl = `https://vidsrc.to/embed/movie/${id}?audio=en`;
+                    } else {
+                        embedUrl = `https://vidsrc.to/embed/movie/${id}`;
+                    }
                 }
             }
 
