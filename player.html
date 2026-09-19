@@ -140,6 +140,17 @@
             height: 100%;
             border: none;
         }
+        /* Anti-Redirect Overlay Layer */
+        .player-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: transparent;
+            cursor: pointer;
+        }
 
         /* Media Info */
         .media-info {
@@ -284,7 +295,7 @@
             </div>
         </div>
 
-        <!-- Video Player Box -->
+        <!-- Video Frame Wrapper -->
         <div class="video-wrapper" id="videoWrapper">
             <div class="loader" style="padding-top: 20%;">Loading player...</div>
         </div>
@@ -387,7 +398,6 @@
             const rating = mediaDetails.score ? mediaDetails.score.toFixed(1) : '8.0';
             const overview = mediaDetails.synopsis || 'No description available.';
             
-            // Clean episode count setup line by line as requested
             let episodesCount = mediaDetails.episodes || 25;
             if(episodesCount > 1500) episodesCount = 1500;
 
@@ -515,13 +525,19 @@
                 }
             }
 
-            // Strict sandbox iframe configuration to block external pop-ups and redirects while allowing video playback
+            // Clean iframe setup with Anti-Redirect Transparent Overlay technique
             document.getElementById('videoWrapper').innerHTML = `
                 <iframe src="${embedUrl}" 
-                    sandbox="allow-scripts allow-same-origin allow-forms"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen>
-                </iframe>`;
+                </iframe>
+                <div class="player-overlay" id="playerOverlay" onclick="removeOverlay(this)"></div>
+            `;
+        }
+
+        function removeOverlay(element) {
+            // Removes the protective overlay on the first user click so the player becomes fully interactive, while blocking unintended initial pop-ups
+            element.style.display = 'none';
         }
 
         fetchDetails();
