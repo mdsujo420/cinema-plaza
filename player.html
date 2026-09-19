@@ -125,6 +125,18 @@
         }
         select option { background: #111827; color: #fff; }
 
+        /* Ad Slot Custom Styling */
+        .movebox-ad-slot {
+            width: 100%;
+            text-align: center;
+            margin: 12px 0;
+            background: #0b132b;
+            border: 1px dashed #1e293b;
+            border-radius: 8px;
+            padding: 8px;
+            overflow: hidden;
+        }
+
         /* Video Frame Wrapper with Anti-Redirect Shield */
         .video-wrapper {
             position: relative;
@@ -290,14 +302,29 @@
             </div>
         </div>
 
+        <!-- 🎯 ১. কন্ট্রোল প্যানেল ও প্লেয়ারের মাঝখানে অ্যাড স্লট -->
+        <div class="movebox-ad-slot">
+            <div id="player-top-banner"></div>
+        </div>
+
         <!-- Video Frame Wrapper with Anti-Redirect Shield -->
         <div class="video-wrapper" id="videoWrapper">
             <div class="loader" style="padding-top: 20%;">Loading player...</div>
         </div>
 
+        <!-- 🎯 ২. ভিডিও প্লেয়ারের ঠিক নিচের অ্যাড স্লট -->
+        <div class="movebox-ad-slot">
+            <div id="player-bottom-banner"></div>
+        </div>
+
         <!-- Details & Description -->
         <div class="media-info" id="mediaInfo">
             <div class="loader">Loading details...</div>
+        </div>
+
+        <!-- 🎯 ৩. ডিটেইলস সেকশনের নিচের অ্যাড স্লট -->
+        <div class="movebox-ad-slot">
+            <div id="details-bottom-banner"></div>
         </div>
 
         <!-- Related / Recommended Section -->
@@ -308,6 +335,9 @@
             </div>
         </div>
     </div>
+
+    <!-- গিটহাবের ads.js ফাইল এখানে লিংক করা হলো -->
+    <script src="ads.js"></script>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
