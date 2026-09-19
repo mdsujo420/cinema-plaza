@@ -22,12 +22,12 @@
         .badge { background: #38bdf8; color: #0f172a; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
         .loader { text-align: center; font-size: 1.5rem; color: #38bdf8; margin-top: 50px; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { position: relative; width: 90%; max-width: 800px; background: #1e293b; border-radius: 12px; overflow: hidden; }
+        /* Modal Player */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { position: relative; width: 95%; max-width: 900px; background: #1e293b; border-radius: 12px; overflow: hidden; }
         .close-btn { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 30px; font-weight: bold; cursor: pointer; z-index: 1001; }
-        .server-switcher { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #0f172a; }
-        .server-switcher button { padding: 5px 12px; font-size: 0.85rem; }
+        .server-switcher { display: flex; justify-content: center; gap: 10px; padding: 12px; background: #0f172a; }
+        .server-switcher button { padding: 6px 14px; font-size: 0.85rem; }
         .iframe-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
         .iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
     </style>
@@ -48,18 +48,22 @@
     <div id="loader" class="loader">Loading content...</div>
     <div id="content-grid" class="grid"></div>
 
-    <!-- Modal -->
+    <!-- Video Modal Player -->
     <div id="videoModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closePlayer()">&times;</span>
             <div class="server-switcher" id="serverButtons"></div>
             <div class="iframe-container">
-                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+                <!-- Clean Iframe without restrictive sandbox attribute -->
+                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
     <script>
+        // Anti-Popup Script: Prevents players from opening new tabs/windows
+        window.open = function() { return null; };
+
         const API_URL = 'https://cinema-plaza.onrender.com/api/content';
         let allData = [];
         let currentItem = null;
@@ -111,11 +115,19 @@
             const playerModal = document.getElementById('videoModal');
             const serverButtons = document.getElementById('serverButtons');
 
-            serverButtons.innerHTML = `
-                <button onclick="changeServer('server_1')">Server 1 (Fast)</button>
-                <button onclick="changeServer('server_2')">Server 2 (HD)</button>
-            `;
-            changeServer('server_1');
+            if(item.type === 'movie') {
+                serverButtons.innerHTML = `
+                    <button onclick="changeServer('m_1')">Server 1 (VidSrc)</button>
+                    <button onclick="changeServer('m_2')">Server 2 (AutoEmbed)</button>
+                `;
+                changeServer('m_1');
+            } else {
+                serverButtons.innerHTML = `
+                    <button onclick="changeServer('a_1')">Anime Server 1</button>
+                    <button onclick="changeServer('a_2')">Anime Server 2</button>
+                `;
+                changeServer('a_1');
+            }
 
             playerModal.style.display = 'flex';
         }
@@ -124,19 +136,14 @@
             const iframe = document.getElementById('videoPlayer');
             const id = currentItem.id;
 
-            if(currentItem.type === 'movie') {
-                if(server === 'server_1') {
-                    iframe.src = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
-                } else {
-                    iframe.src = `https://vidlink.pro/movie/${id}`;
-                }
-            } else {
-                // Anime handling
-                if(server === 'server_1') {
-                    iframe.src = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
-                } else {
-                    iframe.src = `https://vidlink.pro/tv/${id}`;
-                }
+            if(server === 'm_1') {
+                iframe.src = `https://vidsrc.me/embed/movie?tmdb=${id}`;
+            } else if(server === 'm_2') {
+                iframe.src = `https://player.smashy.stream/movie/${id}`;
+            } else if(server === 'a_1') {
+                iframe.src = `https://vidsrc.me/embed/tv?tmdb=${id}`;
+            } else if(server === 'a_2') {
+                iframe.src = `https://player.smashy.stream/tv/${id}`;
             }
         }
 
