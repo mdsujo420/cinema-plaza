@@ -192,6 +192,22 @@
             border-radius: 6px; cursor: pointer; font-size: 11px;
         }
 
+        /* 🎯 হোমপেজের অ্যাড স্লট স্টাইল */
+        .home-ad-slot {
+            width: 92%;
+            max-width: 1000px;
+            margin: 15px auto;
+            text-align: center;
+            background: #0b132b;
+            border: 1px dashed #1e293b;
+            border-radius: 8px;
+            padding: 8px;
+            overflow: hidden;
+        }
+        @media (min-width: 768px) {
+            .home-ad-slot { width: 90%; margin: 20px auto; }
+        }
+
         .section-header { margin: 20px 4% 10px; }
         @media (min-width: 768px) { .section-header { margin: 35px 5% 15px; } }
         .section-title { font-size: 15px; font-weight: 700; color: #f8fafc; border-left: 4px solid #38bdf8; padding-left: 8px; }
@@ -303,12 +319,25 @@
         <div class="loader" style="padding-top: 80px;">Loading banner...</div>
     </div>
 
+    <!-- 🎯 ১. স্লাইডার ও ট্রেন্ডিং ফিডের মাঝখানে অ্যাড স্লট -->
+    <div class="home-ad-slot">
+        <div id="home-top-banner"></div>
+    </div>
+
     <div class="section-header">
         <div class="section-title" id="mainTitle1">🔥 Trending Feed & Popular Collections</div>
     </div>
     <div class="grid" id="contentGrid1">
         <div class="loader">Loading catalog...</div>
     </div>
+
+    <!-- 🎯 ২. মুভি গ্রিডের একদম নিচে অ্যাড স্লট -->
+    <div class="home-ad-slot">
+        <div id="home-bottom-banner"></div>
+    </div>
+
+    <!-- গিটহাবের ads.js ফাইল এখানে লিংক করা হলো -->
+    <script src="ads.js"></script>
 
     <script>
         let moviesData = [], animeData = [], kdramaData = [], sliderItems = [];
