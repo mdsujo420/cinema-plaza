@@ -254,9 +254,9 @@
             <div class="control-group">
                 <label>Server:</label>
                 <select id="serverSelect" onchange="reloadPlayer()">
-                    <option value="multiembed">⚡ Server 1 (MultiEmbed - Clean)</option>
-                    <option value="vidsrc_cc">🔥 Server 2 (VidSrc.cc)</option>
-                    <option value="embed_su">💫 Server 3 (Embed.su)</option>
+                    <option value="vidsrc_to">⚡ Server 1 (VidSrc HD)</option>
+                    <option value="embed_su">🔥 Server 2 (Embed.su)</option>
+                    <option value="vidsrc_cc">💫 Server 3 (VidSrc.cc)</option>
                 </select>
             </div>
             
@@ -484,13 +484,11 @@
             const ep = document.getElementById('episodeSelect').value || 1;
             const season = document.getElementById('seasonSelect').value || 1;
 
-            if(server === 'vidsrc_cc') {
-                if(category === 'anime' || type === 'tv') {
-                    embedUrl = `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${ep}`;
-                } else {
-                    embedUrl = `https://vidsrc.cc/v2/embed/movie/${id}`;
-                }
-            } else if(server === 'embed_su') {
+            let langParam = '';
+            if(lang === 'hindi') langParam = '&audio=hi';
+            if(lang === 'english') langParam = '&audio=en';
+
+            if(server === 'embed_su') {
                 if(category === 'anime') {
                     embedUrl = `https://embed.su/embed/anime/${id}/${ep}`;
                 } else if(type === 'tv') {
@@ -498,19 +496,26 @@
                 } else {
                     embedUrl = `https://embed.su/embed/movie/${id}`;
                 }
-            } else {
-                // MultiEmbed clean player source to prevent redirects and support anime/movies seamlessly
+            } else if(server === 'vidsrc_cc') {
                 if(category === 'anime' || type === 'tv') {
-                    embedUrl = `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${ep}`;
+                    embedUrl = `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${ep}`;
                 } else {
-                    embedUrl = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+                    embedUrl = `https://vidsrc.cc/v2/embed/movie/${id}`;
+                }
+            } else {
+                // VidSrc TO default robust server
+                if(category === 'anime') {
+                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}`;
+                } else if(type === 'tv') {
+                    embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${ep}`;
+                } else {
+                    embedUrl = `https://vidsrc.to/embed/movie/${id}`;
                 }
             }
 
-            // Using strict sandbox parameters to completely block popups, scripts escaping, and redirects
+            // Clean iframe setup without sandboxing errors, ensuring direct playback
             document.getElementById('videoWrapper').innerHTML = `
                 <iframe src="${embedUrl}" 
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-presentation"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen>
                 </iframe>
