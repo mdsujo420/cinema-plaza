@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Plaza - Movies, Series & Anime</title>
+    <title>Movie Plaza - Movies & Anime</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -27,78 +27,79 @@
     <div class="main-container">
         <div id="homeTopAd"></div>
 
-        <div class="section-title" id="gridTitle1">🔥 Trending & Popular Movies</div>
+        <div class="section-title" id="gridTitle1">🔥 Popular Movies</div>
         <div id="contentGrid" class="grid">Loading content...</div>
 
-        <div id="homeMiddleAd" class="ad-grid-row"></div>
+        <div id="homeMiddleAd"></div>
 
-        <div class="section-title" id="gridTitle2">⚡ Popular Anime & Series</div>
+        <div class="section-title" id="gridTitle2">⚡ Popular Anime</div>
         <div id="contentGrid2" class="grid">Loading content...</div>
     </div>
 
     <script src="ads.js"></script>
     <script>
         const API_KEY = '15d2ea64021d46a192f0b70ed4b2cd35';
-        let allMovies = [];
-        let allTV = [];
-        let allAnime = [];
 
-        // ফোলব্যাক ডেটা (API স্লো হলেও যেন সাথে সাথে দেখায়)
-        const backupData = [
+        const defaultMovies = [
             { id: 550, title: "Fight Club", type: "movie", poster: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg", rating: "8.4", year: "1999", lang: "Hindi/Eng" },
-            { id: 37854, title: "One Piece", type: "tv", poster: "https://image.tmdb.org/t/p/w500/fcT8ee32P9R2I8K32824.jpg", rating: "8.9", year: "1999", lang: "Sub/Dub", isAnime: true },
-            { id: 1429, title: "Attack on Titan", type: "tv", poster: "https://image.tmdb.org/t/p/w500/h8gWmN3R94848.jpg", rating: "9.0", year: "2013", lang: "Sub/Dub", isAnime: true },
-            { id: 157336, title: "Interstellar", type: "movie", poster: "https://image.tmdb.org/t/p/w500/gEU2Q3L3A3738.jpg", rating: "8.6", year: "2014", lang: "Hindi/Eng" }
+            { id: 157336, title: "Interstellar", type: "movie", poster: "https://image.tmdb.org/t/p/w500/gEU2Q3L3A3738.jpg", rating: "8.6", year: "2014", lang: "Hindi/Eng" },
+            { id: 27205, title: "Inception", type: "movie", poster: "https://image.tmdb.org/t/p/w500/oYuLE291oA18A232yB3912.jpg", rating: "8.4", year: "2010", lang: "Hindi/Eng" },
+            { id: 155, title: "The Dark Knight", type: "movie", poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WM2323284.jpg", rating: "8.5", year: "2008", lang: "Hindi/Eng" }
         ];
 
-        async function fetchContent() {
+        const defaultAnime = [
+            { id: 37854, title: "One Piece", type: "tv", poster: "https://image.tmdb.org/t/p/w500/cMD9Y21R2f33.jpg", rating: "8.9", year: "1999", lang: "Sub/Dub", isAnime: true },
+            { id: 1429, title: "Attack on Titan", type: "tv", poster: "https://image.tmdb.org/t/p/w500/h8gWmN3R94848.jpg", rating: "9.0", year: "2013", lang: "Sub/Dub", isAnime: true },
+            { id: 85937, title: "Demon Slayer", type: "tv", poster: "https://image.tmdb.org/t/p/w500/xUfA9394858.jpg", rating: "8.7", year: "2019", lang: "Sub/Dub", isAnime: true },
+            { id: 30984, title: "Bleach", type: "tv", poster: "https://image.tmdb.org/t/p/w500/2Eew329384.jpg", rating: "8.3", year: "2004", lang: "Sub/Dub", isAnime: true }
+        ];
+
+        let apiMovies = [];
+        let apiAnime = [];
+
+        async function initData() {
             try {
-                // ১. পপুলার মুভি
-                const resM = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`);
-                const dataM = await resM.json();
-                if (dataM.results && dataM.results.length > 0) {
-                    allMovies = dataM.results.map(i => ({
-                        id: i.id,
-                        title: i.title || i.name,
-                        type: 'movie',
-                        poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'https://placehold.co/500x750/1e293b/ffffff?text=No+Poster',
-                        rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
-                        year: (i.release_date || '2024').substring(0, 4),
-                        lang: 'Hindi/Eng'
-                    }));
+                const [mRes, aRes] = await Promise.all([
+                    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`),
+                    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=16&with_original_language=ja`)
+                ]);
+
+                if (mRes.ok) {
+                    const mData = await mRes.json();
+                    if (mData.results && mData.results.length) {
+                        apiMovies = mData.results.map(i => ({
+                            id: i.id,
+                            title: i.title || i.name,
+                            type: 'movie',
+                            poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'https://placehold.co/500x750/1e293b/ffffff?text=No+Poster',
+                            rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
+                            year: (i.release_date || '2024').substring(0, 4),
+                            lang: 'Hindi/Eng'
+                        }));
+                    }
                 }
 
-                // ২. পপুলার এনিমে
-                const resA = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=16&with_original_language=ja`);
-                const dataA = await resA.json();
-                if (dataA.results && dataA.results.length > 0) {
-                    allAnime = dataA.results.map(i => ({
-                        id: i.id,
-                        title: i.name,
-                        type: 'tv',
-                        poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'https://placehold.co/500x750/1e293b/ffffff?text=No+Poster',
-                        rating: i.vote_average ? i.vote_average.toFixed(1) : '8.0',
-                        year: (i.first_air_date || '2024').substring(0, 4),
-                        lang: 'Sub/Dub',
-                        isAnime: true
-                    }));
+                if (aRes.ok) {
+                    const aData = await aRes.json();
+                    if (aData.results && aData.results.length) {
+                        apiAnime = aData.results.map(i => ({
+                            id: i.id,
+                            title: i.name || i.title,
+                            type: 'tv',
+                            poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : 'https://placehold.co/500x750/1e293b/ffffff?text=No+Poster',
+                            rating: i.vote_average ? i.vote_average.toFixed(1) : '8.0',
+                            year: (i.first_air_date || '2024').substring(0, 4),
+                            lang: 'Sub/Dub',
+                            isAnime: true
+                        }));
+                    }
                 }
-
-                if (allMovies.length > 0) {
-                    renderGrid(allMovies.slice(0, 10), 'contentGrid');
-                } else {
-                    renderGrid(backupData, 'contentGrid');
-                }
-
-                if (allAnime.length > 0) {
-                    renderGrid(allAnime.slice(0, 10), 'contentGrid2');
-                }
-
-            } catch (err) {
-                console.log("API Fetch Failed, using backup");
-                renderGrid(backupData, 'contentGrid');
-                document.getElementById('contentGrid2').style.display = 'none';
+            } catch (e) {
+                console.log("API fetch failed, fallback active");
             }
+
+            renderGrid(apiMovies.length ? apiMovies.slice(0, 12) : defaultMovies, 'contentGrid');
+            renderGrid(apiAnime.length ? apiAnime.slice(0, 12) : defaultAnime, 'contentGrid2');
         }
 
         function renderGrid(list, targetId) {
@@ -106,17 +107,15 @@
             if (!grid) return;
             grid.innerHTML = '';
 
-            if(!list || list.length === 0) {
-                grid.innerHTML = '<p style="color:#94a3b8;">No content found.</p>';
+            if (!list || !list.length) {
+                grid.innerHTML = '<p style="color:#94a3b8; grid-column:1/-1;">No content found.</p>';
                 return;
             }
 
             list.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => {
-                    window.location.href = `player.html?id=${item.id}&type=${item.type}`;
-                };
+                card.onclick = () => window.location.href = `player.html?id=${item.id}&type=${item.type}`;
                 card.innerHTML = `
                     <span class="lang-badge">${item.lang}</span>
                     <img src="${item.poster}" alt="${item.title}" loading="lazy" onerror="this.src='https://placehold.co/500x750/1e293b/ffffff?text=Poster'">
@@ -140,37 +139,52 @@
             const t2 = document.getElementById('gridTitle2');
             const g2 = document.getElementById('contentGrid2');
 
+            const moviesList = apiMovies.length ? apiMovies : defaultMovies;
+            const animeList = apiAnime.length ? apiAnime : defaultAnime;
+
             if (cat === 'all') {
-                t1.innerText = '🔥 Trending & Popular Movies';
-                t2.innerText = '⚡ Popular Anime & Series';
+                t1.innerText = '🔥 Popular Movies';
+                t2.innerText = '⚡ Popular Anime';
                 t2.style.display = 'flex';
                 g2.style.display = 'grid';
-                renderGrid(allMovies.slice(0, 10), 'contentGrid');
-                renderGrid(allAnime.slice(0, 10), 'contentGrid2');
+                renderGrid(moviesList.slice(0, 10), 'contentGrid');
+                renderGrid(animeList.slice(0, 10), 'contentGrid2');
             } else if (cat === 'anime') {
                 t1.innerText = '⚡ All Anime Series & Movies';
                 t2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid(allAnime, 'contentGrid');
+                renderGrid(animeList, 'contentGrid');
             } else if (cat === 'movie') {
                 t1.innerText = '🎬 All Top Movies';
                 t2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid(allMovies, 'contentGrid');
-            } else {
-                t1.innerText = '📺 Content List';
+                renderGrid(moviesList, 'contentGrid');
+            } else if (cat === 'tv') {
+                t1.innerText = '📺 TV Shows & Series';
                 t2.style.display = 'none';
                 g2.style.display = 'none';
-                renderGrid([...allMovies, ...allAnime].slice(0, 15), 'contentGrid');
+                renderGrid(animeList, 'contentGrid');
+            } else {
+                t1.innerText = '🔥 Trending Content';
+                t2.style.display = 'none';
+                g2.style.display = 'none';
+                renderGrid([...moviesList, ...animeList], 'contentGrid');
             }
         }
 
         function searchContent() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            if(!q) return;
-            const combined = [...allMovies, ...allAnime];
+            const q = document.getElementById('searchInput').value.trim().toLowerCase();
+            const moviesList = apiMovies.length ? apiMovies : defaultMovies;
+            const animeList = apiAnime.length ? apiAnime : defaultAnime;
+
+            if (!q) {
+                switchTab('all', document.querySelector('.cat-pill.active'));
+                return;
+            }
+
+            const combined = [...moviesList, ...animeList];
             const filtered = combined.filter(i => i.title.toLowerCase().includes(q));
-            
+
             document.getElementById('gridTitle1').innerText = `🔍 Search Results`;
             document.getElementById('gridTitle2').style.display = 'none';
             document.getElementById('contentGrid2').style.display = 'none';
@@ -182,7 +196,7 @@
             renderAdBanner('homeMiddleAd');
         }
 
-        fetchContent();
+        initData();
     </script>
 </body>
 </html>
