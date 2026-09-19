@@ -54,14 +54,14 @@
             <span class="close-btn" onclick="closePlayer()">&times;</span>
             <div class="server-switcher" id="serverButtons"></div>
             <div class="iframe-container">
-                <!-- Clean Iframe without restrictive sandbox attribute -->
-                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+                <!-- Sandbox permissions added to allow streaming & fullscreen while strictly blocking popups and redirects -->
+                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // Anti-Popup Script: Prevents players from opening new tabs/windows
+        // JS Popup Blockers
         window.open = function() { return null; };
 
         const API_URL = 'https://cinema-plaza.onrender.com/api/content';
