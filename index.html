@@ -35,16 +35,13 @@
         <div id="contentGrid2" class="grid">Loading anime...</div>
     </div>
 
-    <script src="ads.js"></script>
     <script>
-        // আপনার তিনটি এপিআই কি এখানে সেট করা হলো
         const TMDB_API_KEYS = [
             '1a878c977c07619736ef416785671db8',
             '9e303205ce05a268cb89dfaa06b3f1f0',
             'aab07fec041a520555467df59e5a4f64'
         ];
 
-        // সিস্টেম স্বয়ংক্রিয়ভাবে যেকোনো একটিভ কি বেছে নেবে
         function getActiveKey() {
             return TMDB_API_KEYS[Math.floor(Math.random() * TMDB_API_KEYS.length)];
         }
@@ -61,7 +58,6 @@
             try {
                 const apiKey = getActiveKey();
 
-                // ১. TMDB API থেকে Movies ফেচ
                 const fetchMovies = fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&page=1`)
                     .then(res => res.json())
                     .then(data => {
@@ -70,7 +66,7 @@
                                 id: 'm_' + i.id,
                                 title: i.title || i.name,
                                 type: 'movie',
-                                poster: getSafeImage(i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : ''),
+                                poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
                                 rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
                                 year: (i.release_date || '2024').substring(0, 4),
                                 lang: 'Hindi/Eng'
@@ -79,7 +75,6 @@
                         return [];
                     }).catch(() => []);
 
-                // ২. Jikan API থেকে Anime ফেচ (সম্পূর্ণ ফ্রি)
                 const fetchAnime = fetch(`https://api.jikan.moe/v4/top/anime?limit=25`)
                     .then(res => res.json())
                     .then(data => {
@@ -88,7 +83,7 @@
                                 id: 'a_' + i.mal_id,
                                 title: i.title_english || i.title,
                                 type: 'tv',
-                                poster: getSafeImage(i.images?.jpg?.large_image_url || i.images?.jpg?.image_url),
+                                poster: i.images?.jpg?.large_image_url || i.images?.jpg?.image_url || '',
                                 rating: i.score ? i.score.toFixed(1) : '8.0',
                                 year: i.year || '2023',
                                 lang: 'Sub/Dub',
@@ -100,9 +95,8 @@
 
                 const [movies, anime] = await Promise.all([fetchMovies, fetchAnime]);
 
-                // ডুপ্লিকেট কন্টেন্ট ফিল্টার করে বাদ দেওয়া
-                allMovies = Array.from(new Map(movies.map(item => [item.title, item])).values());
-                allAnime = Array.from(new Map(anime.map(item => [item.title, item])).values());
+                allMovies = movies;
+                allAnime = anime;
 
                 renderGrid(allMovies, 'contentGrid');
                 renderGrid(allAnime, 'contentGrid2');
@@ -128,7 +122,7 @@
                 const realId = item.id.replace(/^[ma]_/, '');
                 card.onclick = () => window.location.href = `player.html?id=${realId}&type=${item.type}`;
                 
-                const safeTitle = item.title.replace(/'/g, "");
+                const safeTitle = item.title ? item.title.replace(/'/g, "") : "Movie";
                 card.innerHTML = `
                     <span class="lang-badge">${item.lang}</span>
                     <img src="${item.poster}" alt="${safeTitle}" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/500x750/1e293b/ffffff?text=${encodeURIComponent(safeTitle)}'">
@@ -173,8 +167,7 @@
                 t1.innerText = '🔥 Trending Content';
                 t2.style.display = 'none';
                 g2.style.display = 'none';
-                const uniqueTrending = Array.from(new Map([...allMovies, ...allAnime].map(item => [item.title, item])).values());
-                renderGrid(uniqueTrending, 'contentGrid');
+                renderGrid([...allMovies, ...allAnime], 'contentGrid');
             }
         }
 
@@ -199,7 +192,6 @@
                 const jikanSearch = fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(q)}&limit=10`).then(r => r.json()).catch(() => null);
 
                 const [tmdbRes, jikanRes] = await Promise.all([tmdbSearch, jikanSearch]);
-
                 let results = [];
 
                 if (tmdbRes && tmdbRes.results) {
@@ -208,7 +200,7 @@
                             id: 'm_' + i.id,
                             title: i.title || i.name,
                             type: i.media_type === 'tv' ? 'tv' : 'movie',
-                            poster: getSafeImage(i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : ''),
+                            poster: i.poster_path ? `https://image.tmdb.org/t/p/w500${i.poster_path}` : '',
                             rating: i.vote_average ? i.vote_average.toFixed(1) : '7.5',
                             year: (i.release_date || i.first_air_date || '2024').substring(0, 4),
                             lang: 'Hindi/Eng'
@@ -222,7 +214,7 @@
                             id: 'a_' + i.mal_id,
                             title: i.title_english || i.title,
                             type: 'tv',
-                            poster: getSafeImage(i.images?.jpg?.large_image_url),
+                            poster: i.images?.jpg?.large_image_url || '',
                             rating: i.score ? i.score.toFixed(1) : '8.0',
                             year: i.year || '2023',
                             lang: 'Sub/Dub'
@@ -230,16 +222,10 @@
                     });
                 }
 
-                const uniqueResults = Array.from(new Map(results.map(item => [item.title, item])).values());
-                renderGrid(uniqueResults, 'contentGrid');
+                renderGrid(results, 'contentGrid');
             } catch (e) {
                 console.error(e);
             }
-        }
-
-        if (typeof renderAdBanner === 'function') {
-            renderAdBanner('homeTopAd');
-            renderAdBanner('homeMiddleAd');
         }
 
         fetchMultiSourceContent();
