@@ -1,59 +1,70 @@
 // ==========================================
-// MOVEBOX ADS CONFIGURATION & PLACEMENT
+// MOVIE PLAZA - SMART AD SYSTEM (READY TO USE)
+// Networks: Adsterra, Monetag, Adetika
 // ==========================================
 
-// ১. এডসেন্স কনফিগারেশন (আপনার ক্লায়েন্ট আইডি দিন)
-const ADSENSE_CLIENT_ID = "ca-pub-XXXXXXXXXXXXXXXX"; // <-- আপনার AdSense Publisher ID এখানে বসাবেন
+const ADS_CONFIG = {
+    // ১. ADSTERRA (এখানে Adsterra-র কোড ও ডিরেক্ট লিংক বসাবেন)
+    adsterra: {
+        active: true,
+        popunderUrl: "", // <-- এখানে Adsterra-র Popunder/Direct Link পেস্ট করবেন
+        bannerCode: ``   // <-- এখানে Adsterra-র Banner HTML/JS কোড পেস্ট করবেন
+    },
 
-// ২. অটো এডসেন্স স্ক্রিপ্ট লোডার
-(function loadAdSense() {
-    if(ADSENSE_CLIENT_ID && ADSENSE_CLIENT_ID !== "ca-pub-XXXXXXXXXXXXXXXX") {
+    // ২. MONETAG (এখানে Monetag-এর তথ্য বসাবেন)
+    monetag: {
+        active: true,
+        tagScriptUrl: "", // <-- Monetag Script URL (যেমন: https://alwingulla.com/...)
+        zoneId: ""        // <-- Monetag Zone ID
+    },
+
+    // ৩. ADETIKA (এখানে Adetika-র কোড বসাবেন)
+    adetika: {
+        active: true,
+        bannerCode: ``   // <-- Adetika Banner HTML Code
+    }
+};
+
+// ==========================================
+// AUTO-LOADER ENGINE (DO NOT TOUCH BELOW)
+// ==========================================
+
+// ১. পপ-আপ / পপ-আন্ডার অটো হ্যান্ডলার
+(function initPopAds() {
+    if (ADS_CONFIG.adsterra.active && ADS_CONFIG.adsterra.popunderUrl.trim() !== "") {
+        document.addEventListener('click', function popHandler() {
+            window.open(ADS_CONFIG.adsterra.popunderUrl, '_blank');
+            document.removeEventListener('click', popHandler);
+        }, { once: true });
+    }
+
+    if (ADS_CONFIG.monetag.active && ADS_CONFIG.monetag.zoneId.trim() !== "") {
         const script = document.createElement('script');
-        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`;
+        script.src = ADS_CONFIG.monetag.tagScriptUrl;
+        script.dataset.zone = ADS_CONFIG.monetag.zoneId;
         script.async = true;
-        script.crossOrigin = "anonymous";
         document.head.appendChild(script);
     }
 })();
 
-// ৩. এড ব্যানার রেন্ডারিং ফাংশন
-function renderAdBanner(containerId, adType = 'banner', slotId = '') {
+// ২. অটোমেটিক ব্যানার এড রেন্ডারার
+function renderAdBanner(containerId, preferredNetwork = 'adsterra') {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // যদি এডসেন্স অ্যাক্টিভ না থাকে বা কাস্টম ব্যাকআপ এড (Adsterra/Native/Banner) দেখাতে চান:
-    if (!slotId) {
-        container.innerHTML = `
-            <div class="movebox-ad-box ${adType}-ad">
-                <div class="ad-tag">SPONSORED AD</div>
-                <div class="ad-content-dummy">
-                    <a href="https://example.com" target="_blank" rel="nofollow">
-                        <img src="https://via.placeholder.com/${adType === 'leaderboard' ? '728x90' : '300x250'}?text=Your+Ad+Here" alt="Ad">
-                    </a>
-                </div>
-            </div>
-        `;
-    } else {
-        // রিয়েল গুগল এডসেন্স স্লট
-        container.innerHTML = `
-            <div class="movebox-ad-box">
-                <div class="ad-tag">ADVERTISEMENT</div>
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="${ADSENSE_CLIENT_ID}"
-                     data-ad-slot="${slotId}"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-            </div>
-        `;
-        try {
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {}
-    }
-}
+    let html = "";
 
-// ৪. পপ-আপ / ডিরেক্ট লিংক এডস (Adsterra / Popunder Support)
-function triggerPopunderAd() {
-    // Adsterra / Popunder Script Integration Point
-    console.log("Popunder Ad Ready");
+    if (preferredNetwork === 'adsterra' && ADS_CONFIG.adsterra.bannerCode.trim() !== "") {
+        html = ADS_CONFIG.adsterra.bannerCode;
+    } else if (preferredNetwork === 'adetika' && ADS_CONFIG.adetika.bannerCode.trim() !== "") {
+        html = ADS_CONFIG.adetika.bannerCode;
+    }
+
+    if (html === "") {
+        container.style.display = 'none';
+        container.innerHTML = '';
+    } else {
+        container.style.display = 'block';
+        container.innerHTML = `<div class="movebox-ad-box">${html}</div>`;
+    }
 }
