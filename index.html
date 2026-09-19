@@ -28,7 +28,7 @@
         .close-btn { position: absolute; top: 10px; right: 15px; color: #fff; font-size: 30px; font-weight: bold; cursor: pointer; z-index: 1001; }
         .iframe-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
         .iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-        .server-switcher { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #0f172a; }
+        .server-switcher { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #0f172a; flex-wrap: wrap; }
         .server-switcher button { padding: 5px 12px; font-size: 0.85rem; }
     </style>
 </head>
@@ -52,11 +52,9 @@
     <div id="videoModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closePlayer()">&times;</span>
-            <div class="server-switcher" id="serverButtons">
-                <!-- Dynamic Server Buttons -->
-            </div>
+            <div class="server-switcher" id="serverButtons"></div>
             <div class="iframe-container">
-                <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+                <iframe id="videoPlayer" src="" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
             </div>
         </div>
     </div>
@@ -118,17 +116,17 @@
             
             if(item.type === 'movie') {
                 serverButtons.innerHTML = `
-                    <button onclick="changeServer('vidsrc_me')">Server 1 (VidSrc)</button>
-                    <button onclick="changeServer('embed_su')">Server 2 (2Embed)</button>
-                    <button onclick="changeServer('vidsrc_pro')">Server 3 (Pro)</button>
+                    <button onclick="changeServer('vidsrc_me')">Server 1</button>
+                    <button onclick="changeServer('vidsrc_icu')">Server 2</button>
+                    <button onclick="changeServer('embed_su')">Server 3</button>
                 `;
                 changeServer('vidsrc_me');
             } else {
                 serverButtons.innerHTML = `
-                    <button onclick="changeServer('vidsrc_anime')">Server 1</button>
-                    <button onclick="changeServer('2embed_anime')">Server 2</button>
+                    <button onclick="changeServer('anime_1')">Anime Server 1</button>
+                    <button onclick="changeServer('anime_2')">Anime Server 2</button>
                 `;
-                changeServer('vidsrc_anime');
+                changeServer('anime_1');
             }
 
             playerModal.style.display = 'flex';
@@ -137,17 +135,18 @@
         function changeServer(server) {
             const iframe = document.getElementById('videoPlayer');
             const id = currentItem.id;
+            const title = encodeURIComponent(currentItem.title);
 
             if(server === 'vidsrc_me') {
                 iframe.src = `https://vidsrc.me/embed/movie?tmdb=${id}`;
+            } else if(server === 'vidsrc_icu') {
+                iframe.src = `https://vidsrc.icu/embed/movie/${id}`;
             } else if(server === 'embed_su') {
                 iframe.src = `https://2embed.org/embed/movie/${id}`;
-            } else if(server === 'vidsrc_pro') {
-                iframe.src = `https://vidsrc.pro/embed/movie/${id}`;
-            } else if(server === 'vidsrc_anime') {
-                iframe.src = `https://vidsrc.cc/v2/embed/anime/${id}`;
-            } else if(server === '2embed_anime') {
-                iframe.src = `https://2embed.org/embed/anime/${id}`;
+            } else if(server === 'anime_1') {
+                iframe.src = `https://vidsrc.icu/embed/anime/${id}`;
+            } else if(server === 'anime_2') {
+                iframe.src = `https://autoembed.co/anime/tmdb/${id}-1-1`;
             }
         }
 
