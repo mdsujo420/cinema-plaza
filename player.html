@@ -1,39 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch - Movie Plaza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        body {
+            background-color: #070d1b;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(7, 13, 27, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: #38bdf8;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .logo {
+            font-size: 15px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #38ef7d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+        }
+        .search-bar {
+            display: flex;
+            gap: 5px;
+        }
+        .search-bar input {
+            padding: 6px 10px;
+            width: 130px;
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            color: #fff;
+            outline: none;
+            font-size: 11px;
+        }
+        .search-bar button {
+            background: #38bdf8;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: #070d1b;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        @media (min-width: 768px) {
+            header { padding: 15px 5%; }
+            .logo { font-size: 24px; }
+            .search-bar input { width: 220px; font-size: 13px; }
+        }
+
+        .player-container {
+            width: 94%;
+            max-width: 1000px;
+            margin: 15px auto;
+        }
+        @media (min-width: 768px) {
+            .player-container { margin: 25px auto; }
+        }
+
+        /* Controls Section */
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+            background: #0b132b;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .control-group label {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        select {
+            background: #111827;
+            border: 1px solid #374151;
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            outline: none;
+        }
+        select option { background: #111827; color: #fff; }
+
+        /* Video Frame Wrapper */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        .video-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Media Info */
+        .media-info {
+            background: #0b132b;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .media-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        @media (min-width: 768px) { .media-title { font-size: 24px; } }
+        .media-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .media-meta span { color: #38bdf8; }
+        .media-desc {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+        .cast-section {
+            margin-top: 12px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        .cast-section b { color: #fff; }
+
+        /* Related Section */
+        .related-section {
+            margin-top: 25px;
+        }
+        .related-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            border-left: 3px solid #38bdf8;
+            padding-left: 8px;
+        }
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        @media(min-width: 768px) {
+            .related-grid { grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        }
+        .related-card {
+            background: #0b132b;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            text-decoration: none;
+            color: #fff;
+            transition: transform 0.2s;
+        }
+        .related-card:hover {
+            transform: translateY(-3px);
+            border-color: #38bdf8;
+        }
+        .related-img {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            background: #111827;
+        }
+        .related-info {
+            padding: 8px;
+        }
+        .related-card-title {
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+        .related-card-meta {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .loader { text-align: center; padding: 40px; color: #38bdf8; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <a href="index.html" class="back-btn">←</a>
+            <a href="index.html" class="logo">✨ Movie Plaza</a>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search..." onkeypress="if(event.key === 'Enter') handleSearch()">
+            <button onclick="handleSearch()">🔍</button>
+        </div>
+    </header>
+
+    <div class="player-container">
+        <!-- Controls -->
+        <div class="controls-row">
+            <div class="control-group">
+                <label>Server:</label>
+                <select id="serverSelect" onchange="reloadPlayer()">
+                    <option value="vidsrc_to">⚡ Server 1 (VidSrc HD)</option>
+                    <option value="embed_su">🔥 Server 2 (Embed.su)</option>
+                    <option value="multiembed">💫 Server 3 (MultiEmbed)</option>
+                </select>
+            </div>
+            
+            <div class="control-group" id="seasonGroup" style="display:none;">
+                <label>Season:</label>
+                <select id="seasonSelect" onchange="updateEpisodeList()">
+                    <option value="1">Season 1</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="episodeGroup" style="display:none;">
+                <label>Episode:</label>
+                <select id="episodeSelect" onchange="reloadPlayer()">
+                    <option value="1">Episode 1</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Video Frame Wrapper -->
+        <div class="video-wrapper" id="videoWrapper">
+            <div class="loader" style="padding-top: 20%;">Loading player...</div>
+        </div>
+
+        <!-- Details & Description -->
+        <div class="media-info" id="mediaInfo">
+            <div class="loader">Loading details...</div>
+        </div>
+
+        <!-- Related / Recommended Section -->
+        <div class="related-section">
+            <div class="related-title">You May Also Like</div>
+            <div class="related-grid" id="relatedGrid">
+                <div class="loader">Loading recommendations...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        const type = urlParams.get('type') || 'movie';
+        const category = urlParams.get('category') || 'movie';
+
+        let mediaDetails = null;
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if(query) {
+                window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+            }
+        }
+
+        async function fetchDetails() {
+            if(!id) {
+                document.getElementById('videoWrapper').innerHTML = '<div class="loader">Media not found!</div>';
+                return;
+            }
+
+            try {
+                if(category === 'anime') {
+                    const res = await fetch('https://api.jikan.moe/v4/anime/' + id);
+                    const data = await res.json();
+                    mediaDetails = data.data;
+                    renderAnimeContent();
+                    fetchAnimeRecommendations();
+                } else {
+                    const apiKey = '1a878c977c07619736ef416785671db8';
+                    const res = await fetch('https://api.themoviedb.org/3/' + type + '/' + id + '?api_key=' + apiKey + '&append_to_response=credits');
+                    mediaDetails = await res.json();
+                    renderTMDBContent();
+                    fetchTMDBRecommendations(apiKey);
+                }
+            } catch(e) {
+                document.getElementById('videoWrapper').innerHTML = '<div class="loader">Failed to load stream details.</div>';
+            }
+        }
+
+        function renderTMDBContent() {
+            const title = mediaDetails.title || mediaDetails.name;
+            const year = (mediaDetails.release_date || mediaDetails.first_air_date || '2026').substring(0,4);
+            const rating = mediaDetails.vote_average ? mediaDetails.vote_average.toFixed(1) : '7.5';
+            const overview = mediaDetails.overview || 'No description available.';
+            const cast = mediaDetails.credits?.cast ? mediaDetails.credits.cast.slice(0,4).map(c => c.name).join(', ') : 'N/A';
+
+            if(type === 'tv' && mediaDetails.seasons) {
+                document.getElementById('seasonGroup').style.display = 'flex';
+                document.getElementById('episodeGroup').style.display = 'flex';
+                
+                let sOptions = '';
+                mediaDetails.seasons.forEach(s => {
+                    if(s.episode_count > 0) {
+                        sOptions += '<option value="' + s.season_number + '" data-eps="' + s.episode_count + '">' + (s.name || ('Season ' + s.season_number)) + ' (' + s.episode_count + ' Eps)</option>';
+                    }
+                });
+                document.getElementById('seasonSelect').innerHTML = sOptions;
+                updateEpisodeList();
+            } else {
+                document.getElementById('seasonGroup').style.display = 'none';
+                document.getElementById('episodeGroup').style.display = 'none';
+            }
+
+            reloadPlayer();
+
+            document.getElementById('mediaInfo').innerHTML = 
+                '<div class="media-title">' + title + '</div>' +
+                '<div class="media-meta">' +
+                    '<span>⭐ ' + rating + '</span>' +
+                    '<span>📅 ' + year + '</span>' +
+                    '<span>🎬 ' + type.toUpperCase() + '</span>' +
+                '</div>' +
+                '<div class="media-desc">' + overview + '</div>' +
+                '<div class="cast-section"><b>Top Cast:</b> ' + cast + '</div>';
+        }
+
+        function renderAnimeContent() {
+            const title = mediaDetails.title_english || mediaDetails.title;
+            const year = mediaDetails.year || '2026';
+            const rating = mediaDetails.score ? mediaDetails.score.toFixed(1) : '8.0';
+            const overview = mediaDetails.synopsis || 'No description available.';
+            
+            let episodesCount = mediaDetails.episodes || 25;
+            if(episodesCount > 1500) episodesCount = 1500;
+
+            document.getElementById('seasonGroup').style.display = 'none'; 
+            document.getElementById('episodeGroup').style.display = 'flex';
+
+            let epOptions = '';
+            for(let i = 1; i <= episodesCount; i++) {
+                epOptions += '<option value="' + i + '">Episode ' + i + '</option>';
+            }
+            document.getElementById('episodeSelect').innerHTML = epOptions;
+
+            reloadPlayer();
+
+            document.getElementById('mediaInfo').innerHTML = 
+                '<div class="media-title">' + title + '</div>' +
+                '<div class="media-meta">' +
+                    '<span>⭐ ' + rating + '</span>' +
+                    '<span>📅 ' + year + '</span>' +
+                    '<span>⚡ ANIME (' + (mediaDetails.episodes || 'Ongoing') + ' Episodes)</span>' +
+                '</div>' +
+                '<div class="media-desc">' + overview + '</div>';
+        }
+
+        async function fetchTMDBRecommendations(apiKey) {
+            try {
+                const res = await fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/recommendations?api_key=' + apiKey + '&page=1');
+                const data = await res.json();
+                let results = data.results.slice(0, 4);
+                let html = '';
+                results.forEach(item => {
+                    let t = item.title || item.name;
+                    let p = item.poster_path ? 'https://image.tmdb.org/t/p/w500' + item.poster_path : 'https://via.placeholder.com/300x450?text=No+Image';
+                    let yr = (item.release_date || item.first_air_date || '2026').substring(0,4);
+                    html += 
+                        '<a href="player.html?id=' + item.id + '&type=' + type + '&category=' + category + '" class="related-card">' +
+                            '<img src="' + p + '" class="related-img" alt="' + t + '">' +
+                            '<div class="related-info">' +
+                                '<div class="related-card-title">' + t + '</div>' +
+                                '<div class="related-card-meta">⭐ ' + (item.vote_average?.toFixed(1) || '7.0') + ' • ' + yr + '</div>' +
+                            '</div>' +
+                        '</a>';
+                });
+                document.getElementById('relatedGrid').innerHTML = html || '<div style="color:#94a3b8; font-size:12px;">No recommendations found.</div>';
+            } catch(e) {
+                document.getElementById('relatedGrid').innerHTML = '<div style="color:#94a3b8; font-size:12px;">Failed to load recommendations.</div>';
+            }
+        }
+
+        async function fetchAnimeRecommendations() {
+            try {
+                const res = await fetch('https://api.jikan.moe/v4/anime/' + id + '/recommendations');
+                const data = await res.json();
+                let results = data.data.slice(0, 4);
+                let html = '';
+                results.forEach(rec => {
+                    let entry = rec.entry;
+                    let t = entry.title;
+                    let p = entry.images?.jpg?.image_url || 'https://via.placeholder.com/300x450?text=No+Image';
+                    html += 
+                        '<a href="player.html?id=' + entry.mal_id + '&type=tv&category=anime" class="related-card">' +
+                            '<img src="' + p + '" class="related-img" alt="' + t + '">' +
+                            '<div class="related-info">' +
+                                '<div class="related-card-title">' + t + '</div>' +
+                                '<div class="related-card-meta">⭐ Anime</div>' +
+                            '</div>' +
+                        '</a>';
+                });
+                document.getElementById('relatedGrid').innerHTML = html || '<div style="color:#94a3b8; font-size:12px;">No recommendations found.</div>';
+            } catch(e) {
+                document.getElementById('relatedGrid').innerHTML = '<div style="color:#94a3b8; font-size:12px;">Failed to load recommendations.</div>';
+            }
+        }
+
+        function updateEpisodeList() {
+            const seasonSelect = document.getElementById('seasonSelect');
+            const selectedOption = seasonSelect.options[seasonSelect.selectedIndex];
+            const epsCount = selectedOption ? selectedOption.getAttribute('data-eps') || 12 : 12;
+
+            let epOptions = '';
+            for(let i = 1; i <= epsCount; i++) {
+                epOptions += '<option value="' + i + '">Episode ' + i + '</option>';
+            }
+            document.getElementById('episodeSelect').innerHTML = epOptions;
+            reloadPlayer();
+        }
+
         function reloadPlayer() {
             let embedUrl = '';
             const server = document.getElementById('serverSelect').value;
             const ep = document.getElementById('episodeSelect').value || 1;
             const season = document.getElementById('seasonSelect').value || 1;
 
-            if(server === 'embed_su') {
-                if(category === 'anime') {
-                    embedUrl = `https://embed.su/embed/anime/${id}/${ep}`;
-                } else if(type === 'tv') {
-                    embedUrl = `https://embed.su/embed/tv/${id}/${season}/${ep}`;
+            if (server === 'embed_su') {
+                if (category === 'anime') {
+                    embedUrl = 'https://embed.su/embed/anime/' + id + '/' + ep;
+                } else if (type === 'tv') {
+                    embedUrl = 'https://embed.su/embed/tv/' + id + '/' + season + '/' + ep;
                 } else {
-                    embedUrl = `https://embed.su/embed/movie/${id}`;
+                    embedUrl = 'https://embed.su/embed/movie/' + id;
                 }
-            } else if(server === 'multiembed') {
-                if(category === 'anime' || type === 'tv') {
-                    embedUrl = `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${ep}`;
+            } else if (server === 'multiembed') {
+                if (category === 'anime' || type === 'tv') {
+                    embedUrl = 'https://multiembed.mov/?video_id=' + id + '&tmdb=1&s=' + season + '&e=' + ep;
                 } else {
-                    embedUrl = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+                    embedUrl = 'https://multiembed.mov/?video_id=' + id + '&tmdb=1';
                 }
             } else {
-                if(category === 'anime') {
-                    embedUrl = `https://vidsrc.to/embed/anime/${id}/${ep}`;
-                } else if(type === 'tv') {
-                    embedUrl = `https://vidsrc.to/embed/tv/${id}/${season}/${ep}`;
+                if (category === 'anime') {
+                    embedUrl = 'https://vidsrc.to/embed/anime/' + id + '/' + ep;
+                } else if (type === 'tv') {
+                    embedUrl = 'https://vidsrc.to/embed/tv/' + id + '/' + season + '/' + ep;
                 } else {
-                    embedUrl = `https://vidsrc.to/embed/movie/${id}`;
+                    embedUrl = 'https://vidsrc.to/embed/movie/' + id;
                 }
             }
 
-            // Strict Sandbox setup to completely block redirects & popups while keeping video playable
-            document.getElementById('videoWrapper').innerHTML = `
-                <iframe src="${embedUrl}" 
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
-            `;
+            const videoWrapper = document.getElementById('videoWrapper');
+            videoWrapper.innerHTML = '';
+
+            const iframe = document.createElement('iframe');
+            iframe.src = embedUrl;
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-pointer-lock');
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframe.setAttribute('allowfullscreen', 'true');
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+
+            videoWrapper.appendChild(iframe);
         }
+
+        fetchDetails();
+    </script>
+</body>
+</html>
