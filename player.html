@@ -141,7 +141,7 @@
             border: none;
         }
         
-        /* Transparent Shield to block first accidental redirect/popup */
+        /* Transparent Shield Layer to block aggressive redirects */
         .redirect-shield {
             position: absolute;
             top: 0;
@@ -269,9 +269,9 @@
             <div class="control-group">
                 <label>Server:</label>
                 <select id="serverSelect" onchange="reloadPlayer()">
-                    <option value="vidsrc_to">⚡ Server 1 (VidSrc HD)</option>
-                    <option value="embed_su">🔥 Server 2 (Embed.su)</option>
-                    <option value="multiembed">💫 Server 3 (MultiEmbed)</option>
+                    <option value="embed_su">🔥 Server 1 (Embed.su)</option>
+                    <option value="multiembed">💫 Server 2 (MultiEmbed)</option>
+                    <option value="vidsrc_to">⚡ Server 3 (VidSrc HD)</option>
                 </select>
             </div>
             
@@ -290,7 +290,7 @@
             </div>
         </div>
 
-        <!-- Video Frame Wrapper -->
+        <!-- Video Frame Wrapper with Anti-Redirect Shield -->
         <div class="video-wrapper" id="videoWrapper">
             <div class="loader" style="padding-top: 20%;">Loading player...</div>
         </div>
@@ -494,7 +494,9 @@
                     embedUrl = 'https://embed.su/embed/movie/' + id;
                 }
             } else if (server === 'multiembed') {
-                if (category === 'anime' || type === 'tv') {
+                if (category === 'anime') {
+                    embedUrl = 'https://multiembed.mov/?video_id=' + id + '&tmdb=0&anime=1&s=' + season + '&e=' + ep;
+                } else if (type === 'tv') {
                     embedUrl = 'https://multiembed.mov/?video_id=' + id + '&tmdb=1&s=' + season + '&e=' + ep;
                 } else {
                     embedUrl = 'https://multiembed.mov/?video_id=' + id + '&tmdb=1';
