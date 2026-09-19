@@ -99,8 +99,8 @@
                 <div class="control-group">
                     <span class="control-label">SERVER:</span>
                     <select id="serverSelect" onchange="updateStreamUrl()">
-                        <option value="vidking">Server 1 (VidKing - Multi Audio/Dub)</option>
-                        <option value="vidlink">Server 2 (VidLink Pro - Auto Sub)</option>
+                        <option value="vidlink">Server 1 (VidLink Pro - Auto Sub/Dub)</option>
+                        <option value="vidking">Server 2 (VidKing - Multi Audio)</option>
                         <option value="autoembed">Server 3 (AutoEmbed)</option>
                     </select>
                 </div>
@@ -108,20 +108,20 @@
                 <div class="control-group">
                     <span class="control-label">AUDIO / SUB:</span>
                     <select id="audioGuideSelect" onchange="showAudioGuide()">
-                        <option value="auto">🌐 Multi-Audio Available (Change in Player ⚙️)</option>
-                        <option value="hindi">🇮🇳 Hindi Dubbed (Select Audio Track in Player)</option>
-                        <option value="english">🇬🇧 English Audio / Sub</option>
+                        <option value="auto">🌐 Multi-Audio Available (Change inside Player ⚙️)</option>
+                        <option value="hindi">🇮🇳 Hindi Dubbed Track</option>
+                        <option value="english">🇬🇧 English Audio / Subtitles</option>
                         <option value="japanese">🇯🇵 Japanese Original (Subbed)</option>
                     </select>
                 </div>
             </div>
 
             <div class="lang-banner">
-                <span>🎧 <b>Audio/Language Notice:</b> Click the Gear icon (⚙️) or Subtitle icon (CC) inside the Video Player to switch Hindi, English, or Japanese Audio/Subtitles instantly.</span>
+                <span>🎧 <b>Audio/Language Instruction:</b> Click the Settings icon (⚙️) or Subtitle icon (CC) inside the video player controls to switch between available Audio Tracks & Subtitles.</span>
             </div>
 
             <div class="iframe-container">
-                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
+                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
             </div>
 
             <!-- Media Details Drawer -->
@@ -308,18 +308,18 @@
             const id = currentItem.id;
 
             if(currentItem.type === 'movie') {
-                if(server === 'vidking') iframe.src = `https://vidking.net/embed/movie/${id}`;
-                else if(server === 'vidlink') iframe.src = `https://vidlink.pro/movie/${id}?multi=true`;
+                if(server === 'vidlink') iframe.src = `https://vidlink.pro/movie/${id}?multi=true`;
+                else if(server === 'vidking') iframe.src = `https://vidking.net/embed/movie/${id}`;
                 else iframe.src = `https://player.autoembed.cc/embed/movie/${id}`;
             } else {
-                if(server === 'vidking') iframe.src = `https://vidking.net/embed/tv/${id}/${currentSeason}/${currentEpisode}`;
-                else if(server === 'vidlink') iframe.src = `https://vidlink.pro/tv/${id}/${currentSeason}/${currentEpisode}?multi=true`;
+                if(server === 'vidlink') iframe.src = `https://vidlink.pro/tv/${id}/${currentSeason}/${currentEpisode}?multi=true`;
+                else if(server === 'vidking') iframe.src = `https://vidking.net/embed/tv/${id}/${currentSeason}/${currentEpisode}`;
                 else iframe.src = `https://player.autoembed.cc/embed/tv/${id}/${currentSeason}/${currentEpisode}`;
             }
         }
 
         function showAudioGuide() {
-            alert('অডিও বা ভাষা পরিবর্তন করার জন্য প্লেয়ার চালু করার পর প্লেয়ারের ভেতরের Settings (⚙️) অথবা CC বাটন এ ক্লিক করে Audio Track থেকে Hindi / English / Japanese নির্বাচন করুন।');
+            alert("To change language or audio track, click the Settings (⚙️) or CC button inside the player control bar once the video starts playing.");
         }
 
         function closePlayer() {
