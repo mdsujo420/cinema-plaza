@@ -363,8 +363,13 @@
             const overview = mediaDetails.synopsis || 'No description available.';
             const episodesCount = mediaDetails.episodes || 12;
 
-            document.getElementById('seasonGroup').style.display = 'none';
+            // Enable Season and Episode selectors for Anime as well
+            document.getElementById('seasonGroup').style.display = 'flex';
             document.getElementById('episodeGroup').style.display = 'flex';
+
+            // For anime, mock/default seasons or single season with total episodes
+            let sOptions = `<option value="1" data-eps="${episodesCount}">Season 1 (${episodesCount} Eps)</option>`;
+            document.getElementById('seasonSelect').innerHTML = sOptions;
 
             let epOptions = '';
             for(let i = 1; i <= episodesCount; i++) {
@@ -431,7 +436,7 @@
                         </a>
                     `;
                 });
-                    document.getElementById('relatedGrid').innerHTML = html || '<div style="color:#94a3b8; font-size:12px;">No recommendations found.</div>';
+                document.getElementById('relatedGrid').innerHTML = html || '<div style="color:#94a3b8; font-size:12px;">No recommendations found.</div>';
             } catch(e) {
                 document.getElementById('relatedGrid').innerHTML = '<div style="color:#94a3b8; font-size:12px;">Failed to load recommendations.</div>';
             }
@@ -487,8 +492,8 @@
                 }
             }
 
-            // Strict sandbox to block redirects and pop-ups completely while allowing playback
-            document.getElementById('videoWrapper').innerHTML = `<iframe src="${embedUrl}" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock" allowfullscreen></iframe>`;
+            // Correct sandbox configuration to allow streaming playback and block annoying popups/redirects
+            document.getElementById('videoWrapper').innerHTML = `<iframe src="${embedUrl}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" allowfullscreen></iframe>`;
         }
 
         fetchDetails();
