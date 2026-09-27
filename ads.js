@@ -12,13 +12,13 @@ const ADS_CONFIG = {
         multitagScript: `<script src="https://quge5.com/88/tag.min.js" data-zone="283434" async data-cfasync="false"></script>`
     },
     smartLink: {
-        active: true,
+        active: true, // স্মার্ট লিঙ্ক চালু আছে
         url: "https://www.profitableratecpmnetwork.com/tq0n29rh7s?key=954d42fe6c7cea196376a9f0a71d66f6",
-        delaySeconds: 5 
+        delaySeconds: 5 // ৫ সেকেন্ড পর রিডাইরেক্ট হবে
     }
 };
 
-// গ্লোবাল অ্যাডস এবং সেফ স্মার্ট লিঙ্ক রিডাইরেক্ট হ্যান্ডলার
+// গ্লোবাল অ্যাডস এবং ব্যাক-বাটন সেফ স্মার্ট লিঙ্ক রিডাইরেক্ট
 (function() {
     if (ADS_CONFIG.adsterra.active) {
         if (ADS_CONFIG.adsterra.popunderUrl) {
@@ -38,18 +38,14 @@ const ADS_CONFIG = {
         document.head.appendChild(div);
     }
 
-    // স্মার্ট লিঙ্ক সেফ রিডাইরেক্ট (ক্রোম ব্রাউজারে ব্যাক করে বের হয়ে যাওয়া রোধ করতে)
+    // ৫ সেকেন্ড পর রিডাইরেক্ট হবে (সেম পেজে) এবং ব্যাক করলে সাইটেই থাকবে
     if (ADS_CONFIG.smartLink.active && ADS_CONFIG.smartLink.url) {
         setTimeout(function() {
-            // ইউজারকে হুট করে বের না করে নতুন ট্যাবে স্মার্ট লিঙ্ক ওপেন করবে এবং মেইন সাইট ঠিক রাখবে
-            if (!sessionStorage.getItem('smart_opened')) {
-                sessionStorage.setItem('smart_opened', 'true');
-                let a = document.createElement('a');
-                a.href = ADS_CONFIG.smartLink.url;
-                a.target = '_blank';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
+            if (!sessionStorage.getItem('smart_redirected')) {
+                sessionStorage.setItem('smart_redirected', 'true');
+                // ব্রাউজারের বর্তমান URL হিস্ট্রিতে সেভ করে তারপর রিডাইরেক্ট করা হচ্ছে
+                window.history.pushState("movieplaza", "Movie Plaza", window.location.href);
+                window.location.assign(ADS_CONFIG.smartLink.url); // .assign ব্যবহার করা হলো যাতে ব্যাক বাটন কাজ করে
             }
         }, ADS_CONFIG.smartLink.delaySeconds * 1000);
     }
