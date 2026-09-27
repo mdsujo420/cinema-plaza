@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="monetag" content="05675a920955aeff51babffe2dc93773">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch - Movie Plaza</title>
@@ -25,7 +26,6 @@
         select { background: #111827; border: 1px solid #374151; color: #cbd5e1; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; outline: none; }
         select option { background: #111827; color: #fff; }
 
-        /* প্লেয়ারের নিচে অ্যাড স্লট যাতে স্ক্রোল করে দেখতে সুবিধা হয় */
         .movebox-ad-slot { width: 100%; text-align: center; margin: 10px 0; background: #0b132b; border: 1px dashed #1e293b; border-radius: 8px; padding: 6px; overflow: hidden; }
 
         .video-wrapper { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 10px; overflow: hidden; border: 1px solid #1e293b; }
@@ -68,7 +68,6 @@
     </header>
 
     <div class="player-container">
-        <!-- Controls -->
         <div class="controls-row">
             <div class="control-group">
                 <label>Server:</label>
@@ -94,12 +93,10 @@
             </div>
         </div>
 
-        <!-- 🎯 প্লেয়ারের ঠিক নিচে অ্যাড স্লটগুলো সাজানো হয়েছে যাতে ভিডিও দেখতে সমস্যা না হয় -->
         <div class="movebox-ad-slot">
             <div id="player-top-banner"></div>
         </div>
 
-        <!-- Video Frame Wrapper -->
         <div class="video-wrapper" id="videoWrapper">
             <div class="loader" style="padding-top: 20%;">Loading player...</div>
         </div>
@@ -108,7 +105,6 @@
             <div id="player-bottom-banner"></div>
         </div>
 
-        <!-- Details & Description -->
         <div class="media-info" id="mediaInfo">
             <div class="loader">Loading details...</div>
         </div>
@@ -117,7 +113,6 @@
             <div id="details-bottom-banner"></div>
         </div>
 
-        <!-- Related / Recommended Section -->
         <div class="related-section">
             <div class="related-title">You May Also Like</div>
             <div class="related-grid" id="relatedGrid">
@@ -128,7 +123,6 @@
 
     <script src="ads.js"></script>
     <script>
-        // Render Ad Banners under player securely
         window.addEventListener('DOMContentLoaded', () => {
             renderAdBanner('player-top-banner', 'banner728');
             renderAdBanner('player-bottom-banner', 'native');
