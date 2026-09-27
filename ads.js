@@ -2,24 +2,19 @@
 const ADS_CONFIG = {
     adsterra: {
         active: true,
-        // ১. পপআপ / পপাউন্ডার অ্যাড (সর্বোচ্চ রেভিনিউয়ের জন্য)
         popunderUrl: "https://pl31424997.profitableratecpmnetwork.com/7e/fd/aa/7efdaaa393c2dc8048d0cf9140960aa1.js",
-        // ২. সোশ্যাল বার অ্যাড
         socialBarUrl: "https://pl31424999.profitableratecpmnetwork.com/39/d3/01/39d301af575b3858e93c128747cc277b.js",
-        // ব্যানার বা নেটিভ অ্যাড স্লট (যদি প্রয়োজন হয়)
         nativeBannerCode: `<script async="async" data-cfasync="false" src="https://pl31424998.profitableratecpmnetwork.com/ac931699afda4d03a4b65faad94251d8/invoke.js"></script><div id="container-ac931699afda4d03a4b65faad94251d8"></div>`,
         banner728Code: `<script>atOptions = {'key' : 'f535efb3faec8ed3e53169d6fa9c3b33', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};</script><script src="https://www.highrevenueformat.com/f535efb3faec8ed3e53169d6fa9c3b33/invoke.js"></script>`
     },
     monetag: {
         active: true,
-        // ৩. মনিট্যাগ মাল্টিট্যাগ (Multitag) স্ক্রিপ্ট
         multitagScript: `<script src="https://quge5.com/88/tag.min.js" data-zone="283434" async data-cfasync="false"></script>`
     },
-    // ৪. স্মার্ট লিঙ্ক কনফিগারেশন
     smartLink: {
         active: true,
         url: "https://www.profitableratecpmnetwork.com/tq0n29rh7s?key=954d42fe6c7cea196376a9f0a71d66f6",
-        delaySeconds: 5 // ৫ সেকেন্ড পর রিডাইরেক্ট হবে
+        delaySeconds: 5 
     }
 };
 
@@ -43,10 +38,8 @@ const ADS_CONFIG = {
         document.head.appendChild(div);
     }
 
-    // ৫ সেকেন্ড পর স্মার্ট লিঙ্কে রিডাইরেক্ট এবং ব্যাক হিস্ট্রি ফিক্স
     if (ADS_CONFIG.smartLink.active && ADS_CONFIG.smartLink.url) {
         setTimeout(function() {
-            // ব্রাউজারের হিস্ট্রি ম্যানেজ করা যাতে ব্যবহারকারী ব্যাক করলে আবার সাইটে ফিরে আসে
             window.history.pushState({page: 1}, "", window.location.href);
             window.location.replace(ADS_CONFIG.smartLink.url);
         }, ADS_CONFIG.smartLink.delaySeconds * 1000);
