@@ -12,13 +12,13 @@ const ADS_CONFIG = {
         multitagScript: `<script src="https://quge5.com/88/tag.min.js" data-zone="283434" async data-cfasync="false"></script>`
     },
     smartLink: {
-        active: true, // স্মার্ট লিঙ্ক চালু রাখা হলো
+        active: true,
         url: "https://www.profitableratecpmnetwork.com/tq0n29rh7s?key=954d42fe6c7cea196376a9f0a71d66f6",
         delaySeconds: 5 
     }
 };
 
-// অটো ইনজেক্ট গ্লোবাল অ্যাডস এবং ব্যাক-বাটন ফ্রেন্ডলি স্মার্ট লিঙ্ক রিডাইরেক্ট
+// গ্লোবাল অ্যাডস এবং সেফ স্মার্ট লিঙ্ক রিডাইরেক্ট হ্যান্ডলার
 (function() {
     if (ADS_CONFIG.adsterra.active) {
         if (ADS_CONFIG.adsterra.popunderUrl) {
@@ -38,12 +38,19 @@ const ADS_CONFIG = {
         document.head.appendChild(div);
     }
 
-    // স্মার্ট লিঙ্ক উইথ ব্যাক বাটন হিস্ট্রি হ্যান্ডলিং
+    // স্মার্ট লিঙ্ক সেফ রিডাইরেক্ট (ক্রোম ব্রাউজারে ব্যাক করে বের হয়ে যাওয়া রোধ করতে)
     if (ADS_CONFIG.smartLink.active && ADS_CONFIG.smartLink.url) {
         setTimeout(function() {
-            // ব্রাউজারের হিস্ট্রিতে বর্তমান পেজটি পুশ করে রাখা যাতে ব্যাক করলে সাইটে ফিরে আসা যায়
-            window.history.pushState(null, "", window.location.href);
-            window.location.href = ADS_CONFIG.smartLink.url;
+            // ইউজারকে হুট করে বের না করে নতুন ট্যাবে স্মার্ট লিঙ্ক ওপেন করবে এবং মেইন সাইট ঠিক রাখবে
+            if (!sessionStorage.getItem('smart_opened')) {
+                sessionStorage.setItem('smart_opened', 'true');
+                let a = document.createElement('a');
+                a.href = ADS_CONFIG.smartLink.url;
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }
         }, ADS_CONFIG.smartLink.delaySeconds * 1000);
     }
 })();
