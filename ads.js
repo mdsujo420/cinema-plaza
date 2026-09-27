@@ -14,10 +14,16 @@ const ADS_CONFIG = {
         active: true,
         // ৩. মনিট্যাগ মাল্টিট্যাগ (Multitag) স্ক্রিপ্ট
         multitagScript: `<script src="https://quge5.com/88/tag.min.js" data-zone="283434" async data-cfasync="false"></script>`
+    },
+    // ৪. স্মার্ট লিঙ্ক কনফিগারেশন
+    smartLink: {
+        active: true,
+        url: "https://www.profitableratecpmnetwork.com/tq0n29rh7s?key=954d42fe6c7cea196376a9f0a71d66f6",
+        delaySeconds: 5 // ৫ সেকেন্ড পর রিডাইরেক্ট হবে
     }
 };
 
-// অটো ইনজেক্ট গ্লোবাল অ্যাডস (Popunder, Social Bar, Monetag Multitag)
+// অটো ইনজেক্ট গ্লোবাল অ্যাডস এবং স্মার্ট লিঙ্ক রিডাইরেক্ট
 (function() {
     if (ADS_CONFIG.adsterra.active) {
         if (ADS_CONFIG.adsterra.popunderUrl) {
@@ -35,6 +41,15 @@ const ADS_CONFIG = {
         let div = document.createElement('div');
         div.innerHTML = ADS_CONFIG.monetag.multitagScript;
         document.head.appendChild(div);
+    }
+
+    // ৫ সেকেন্ড পর স্মার্ট লিঙ্কে রিডাইরেক্ট এবং ব্যাক হিস্ট্রি ফিক্স
+    if (ADS_CONFIG.smartLink.active && ADS_CONFIG.smartLink.url) {
+        setTimeout(function() {
+            // ব্রাউজারের হিস্ট্রি ম্যানেজ করা যাতে ব্যবহারকারী ব্যাক করলে আবার সাইটে ফিরে আসে
+            window.history.pushState({page: 1}, "", window.location.href);
+            window.location.replace(ADS_CONFIG.smartLink.url);
+        }, ADS_CONFIG.smartLink.delaySeconds * 1000);
     }
 })();
 
