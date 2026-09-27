@@ -12,13 +12,13 @@ const ADS_CONFIG = {
         multitagScript: `<script src="https://quge5.com/88/tag.min.js" data-zone="283434" async data-cfasync="false"></script>`
     },
     smartLink: {
-        active: true,
+        active: true, // স্মার্ট লিঙ্ক চালু রাখা হলো
         url: "https://www.profitableratecpmnetwork.com/tq0n29rh7s?key=954d42fe6c7cea196376a9f0a71d66f6",
         delaySeconds: 5 
     }
 };
 
-// অটো ইনজেক্ট গ্লোবাল অ্যাডস এবং স্মার্ট লিঙ্ক রিডাইরেক্ট
+// অটো ইনজেক্ট গ্লোবাল অ্যাডস এবং ব্যাক-বাটন ফ্রেন্ডলি স্মার্ট লিঙ্ক রিডাইরেক্ট
 (function() {
     if (ADS_CONFIG.adsterra.active) {
         if (ADS_CONFIG.adsterra.popunderUrl) {
@@ -38,10 +38,12 @@ const ADS_CONFIG = {
         document.head.appendChild(div);
     }
 
+    // স্মার্ট লিঙ্ক উইথ ব্যাক বাটন হিস্ট্রি হ্যান্ডলিং
     if (ADS_CONFIG.smartLink.active && ADS_CONFIG.smartLink.url) {
         setTimeout(function() {
-            window.history.pushState({page: 1}, "", window.location.href);
-            window.location.replace(ADS_CONFIG.smartLink.url);
+            // ব্রাউজারের হিস্ট্রিতে বর্তমান পেজটি পুশ করে রাখা যাতে ব্যাক করলে সাইটে ফিরে আসা যায়
+            window.history.pushState(null, "", window.location.href);
+            window.location.href = ADS_CONFIG.smartLink.url;
         }, ADS_CONFIG.smartLink.delaySeconds * 1000);
     }
 })();
